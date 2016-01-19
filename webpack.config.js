@@ -1,15 +1,24 @@
 var webpack = require('webpack');
 
+var uglify = new webpack.optimize.UglifyJsPlugin({
+  comments: false,
+  sourceMap: false,
+  mangle: false,
+  compress: {
+    warnings: false,
+    drop_debugger: false
+  }
+});
+
 module.exports = {
   entry: './src/truman.js',
   output: {
     path: __dirname,
-    filename: 'truman.js'
+    filename: 'truman.js',
+    libraryTarget: "var",
+    library: "truman"
   },
   module: {
-    noParse: [
-      /node_modules\/sinon\//,
-    ],
     loaders: [
       {
         test: /\.js?$/,
@@ -21,14 +30,5 @@ module.exports = {
       }
     ]
   },
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      comments: false,
-      sourceMap: false,
-      mangle: false,
-      compress: {
-        warnings: false
-      }
-    })
-  ]
+  plugins: [uglify]
 };

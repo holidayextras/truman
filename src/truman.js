@@ -10,26 +10,15 @@ var storageFixtures = [];
 const RECORDING_STATE = 'recording';
 const REPLAYING_STATE = 'replaying';
 
-let autoFixture = module.exports = {
+let truman = module.exports = {
 
   _storageFifo: Promise.resolve(),
 
   initialize(options) {
     fixtureHelper.initialize(options);
-  },
-
-  restoreState() {
-    const state = stateHelper.loadState();
-    if (state.fixtureCollectionName) {
-      if (state.status === RECORDING_STATE) {
-        return autoFixture.record(state.fixtureCollectionName);
-      }
-
-      if (state.status === REPLAYING_STATE) {
-        return autoFixture.replay(state.fixtureCollectionName);
-      }
-    }
-    return Promise.resolve();
+    return truman._restoreState().then(() => {
+      console.log('%cTruman is up and running!', 'color: green');
+    });
   },
 
   pull(fixtureCollectionName, revision, callback) {
@@ -47,7 +36,7 @@ let autoFixture = module.exports = {
   },
 
   push(fixtureCollectionName, tag, callback) {
-    return autoFixture._storageFifo.then(() => {
+    return truman._storageFifo.then(() => {
       return fixtureHelper.push(fixtureCollectionName, tag)
         .then((fixtures) => {
           const message = `Stored ${fixtures.length} fixtures to database (tag: ${(tag || '[AUTO]')})`;
@@ -63,6 +52,10 @@ let autoFixture = module.exports = {
   },
 
   record(fixtureCollectionName, callback) {
+    if (truman.currentStatus() === REPLAYING_STATE) {
+      truman.restore();
+    }
+
     return fixtureHelper.load(fixtureCollectionName)
       .then((fixtures) => {
         // Want this available in memory.
@@ -78,7 +71,7 @@ let autoFixture = module.exports = {
         // Set up listeners for storing.
         xhrHelper.monkeyPatchXHR();
         XMLHttpRequest.onCreate = (xhr) => {
-          return autoFixture._storeXHRWhenReady(xhr, fixtureCollectionName);
+          return truman._storeXHRWhenReady(xhr, fixtureCollectionName);
         };
 
         console.log('%cRECORDING NEW FIXTURES', 'color: red');
@@ -95,6 +88,10 @@ let autoFixture = module.exports = {
   },
 
   replay(fixtureCollectionName, callback) {
+    if (truman.currentStatus() === RECORDING_STATE) {
+      truman.restore();
+    }
+
     return fixtureHelper.load(fixtureCollectionName)
       .then((fixtures) => {
         // Load all of our fixtures into a fake server.
@@ -110,8 +107,9 @@ let autoFixture = module.exports = {
             // the correct fixture version.
             if (matchingFixtures.length > 1) {
               fixtureHelper.removeFirst(fixtures, fixture);
-              autoFixture._storageFifo = autoFixture._storageFifo.then(() => fixtureHelper.store(fixtures, fixtureCollectionName));
+              truman._storageFifo = truman._storageFifo.then(() => fixtureHelper.store(fixtures, fixtureCollectionName));
             }
+
             xhr.respond(fixture.response.status, fixture.response.headers, fixture.response.body);
             console.log(`%cREPLAY%c: ${fixture.request.method} ${fixture.request.url}`, 'color: green', 'color: black');
             console.log(xhr, fixture);
@@ -123,14 +121,16 @@ let autoFixture = module.exports = {
 
         // Send XHRs for which we have a match to the fake server to handle, allow the rest.
         XMLHttpRequest.useFilters = true;
-        XMLHttpRequest.addFilter((method, url) => {
-          const foundFixtures = fixtureHelper.find(fixtures, { method: method, url: url }).length;
-          if (!foundFixtures) {
-            console.log(`%cCALLTHROUGH%c: ${url}`, 'color: grey', 'color: black');
-            console.log(fixtures);
+        XMLHttpRequest.filters = [ // Important to replace all existing filters here.
+          (method, url) => {
+            const foundFixtures = fixtureHelper.find(fixtures, { method: method, url: url }).length;
+            if (!foundFixtures) {
+              console.log(`%cCALLTHROUGH%c: ${url}`, 'color: grey', 'color: black');
+              console.log(fixtures);
+            }
+            return !foundFixtures; // true = allow, false = stub
           }
-          return !foundFixtures; // true = allow, false = stub
-        });
+        ];
 
         stateHelper.updateState({
           fixtureCollectionName: fixtureCollectionName,
@@ -148,7 +148,7 @@ let autoFixture = module.exports = {
   },
 
   restore() {
-    autoFixture._restoreXhr();
+    truman._restoreXhr();
     stateHelper.updateState(null);
     console.log('%cRESTORED%c: All XHR requests unstubbed.', 'color: green', 'color: black');
   },
@@ -177,10 +177,22 @@ let autoFixture = module.exports = {
     return stateHelper.loadState().status || null;
   },
 
-  _restoreXhr() {
-    if (typeof XMLHttpRequest.restore === 'function') {
-      XMLHttpRequest.restore();
+  _restoreState() {
+    const state = stateHelper.loadState();
+    if (state.fixtureCollectionName) {
+      if (state.status === RECORDING_STATE) {
+        return truman.record(state.fixtureCollectionName);
+      }
+
+      if (state.status === REPLAYING_STATE) {
+        return truman.replay(state.fixtureCollectionName);
+      }
     }
+    return Promise.resolve();
+  },
+
+  _restoreXhr() {
+    XMLHttpRequest.restore();
     xhrHelper.unMonkeyPatchXHR();
   },
 
@@ -188,27 +200,27 @@ let autoFixture = module.exports = {
     console.log(`%cRECORDING%c: ${xhr.url}`, 'color: red', 'color: black');
     fixtureHelper.addXhr(storageFixtures, xhr);
     xhr.fixtured = true;
-    autoFixture._storageFifo = autoFixture._storageFifo.then(() => fixtureHelper.store(storageFixtures, fixtureCollectionName));
-    return autoFixture._storageFifo;
+    truman._storageFifo = truman._storageFifo.then(() => fixtureHelper.store(storageFixtures, fixtureCollectionName));
+    return truman._storageFifo;
   },
 
   // 'Ready' is when we have all the information about the XHR we're going to get.
   _storeXHRWhenReady(xhr, fixtureCollectionName) {
-    xhr.onload = function() {
+    xhr.addEventListener('load', ()=> {
       if (!xhr.fixtured) {
-        autoFixture._storeXHR(xhr, fixtureCollectionName);
+        truman._storeXHR(xhr, fixtureCollectionName);
       }
-    };
+    });
 
     const oldOnReadyStateChange = xhr.onreadystatechange;
-    xhr.onreadystatechange = function() {
+    xhr.addEventListener('readystatechange', ()=> {
       if (xhr.readyState === XMLHttpRequest.DONE && !xhr.fixtured) {
-        autoFixture._storeXHR(xhr, fixtureCollectionName);
+        truman._storeXHR(xhr, fixtureCollectionName);
       }
 
       if (oldOnReadyStateChange) {
         oldOnReadyStateChange.apply(this, arguments);
       }
-    };
+    });
   }
 };

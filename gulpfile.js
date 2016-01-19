@@ -7,6 +7,7 @@ var notify = require('gulp-notify');
 var changed = require('gulp-changed');
 var runSequence = require('run-sequence');
 
+var SOURCE_CODE = './src/**/*.js';
 var ENTRY_POINT = './src/truman.js';
 var BUILD_DEST = './dist/';
 var BUILT_FILES = './dist/*.js';
@@ -39,7 +40,7 @@ gulp.task('bundle', function() {
 // --------- WATCH TASKS -----------
 // ---------------------------------
 gulp.task('watch', function () {
-  watch(ENTRY_POINT, function() {
+  watch(SOURCE_CODE, function() {
     gulp.start('build');
   });
 });

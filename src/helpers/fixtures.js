@@ -12,24 +12,29 @@ const NO_NAME_ERR_MSG = 'Fixture collection name not provided.';
 var config = {
   omittedQueryParams: [],
   omittedDataParams: [],
-  domainSynonyms: []
+  domainSynonyms: [],
+  localPouchDB: 'fixtures'
 };
-var db = null;
-var remote = null;
+
+var localDB = null;
+var remoteDB = null;
 
 var fixtureHelper = module.exports = {
   initialize(options) {
     config = options || config;
     window.PouchDB = PouchDB; // Necessary for the PouchDB Chrome inspector
-    db = new PouchDB(config.localPouchDB);
-    remote = new PouchDB(config.remoteCouchDB, {
-      ajax: {
-        timeout: 120000,
-        headers: {
-          Authorization: 'Basic ' + base64.encode(config.remoteUser + ':' + config.remotePassword)
+    localDB = new PouchDB(config.localPouchDB);
+
+    if (config.remoteCouchDB) {
+      remoteDB = new PouchDB(config.remoteCouchDB, {
+        ajax: {
+          timeout: 120000,
+          headers: {
+            Authorization: 'Basic ' + base64.encode(config.remoteUser + ':' + config.remotePassword)
+          }
         }
-      }
-    });
+      });
+    }
   },
 
   load(fixtureCollectionName) {
@@ -39,7 +44,7 @@ var fixtureHelper = module.exports = {
 
     const id = fixtureHelper._buildId(fixtureCollectionName);
 
-    return fixtureHelper._loadFromDatabase(db, id);
+    return fixtureHelper._loadFromDatabase(localDB, id);
   },
 
   store(fixtures, fixtureCollectionName) {
@@ -50,7 +55,7 @@ var fixtureHelper = module.exports = {
     const id = fixtureHelper._buildId(fixtureCollectionName);
     let fixtureRecord = { _id: id, fixtures: fixtures };
 
-    return fixtureHelper._storeToDatabase(db, id, fixtureRecord);
+    return fixtureHelper._storeToDatabase(localDB, id, fixtureRecord);
   },
 
   push(fixtureCollectionName, tag) {
@@ -63,7 +68,7 @@ var fixtureHelper = module.exports = {
         const id = fixtureHelper._buildId(fixtureCollectionName);
         const fixtureRecord = { _id: id, fixtures: fixtures };
 
-        return fixtureHelper._storeToDatabase(remote, id, fixtureRecord, tag)
+        return fixtureHelper._storeToDatabase(remoteDB, id, fixtureRecord, tag)
           .then(() => fixtures)
           .catch((err) => {
             console.error(err);
@@ -77,7 +82,7 @@ var fixtureHelper = module.exports = {
     }
 
     const id = fixtureHelper._buildId(fixtureCollectionName);
-    return fixtureHelper._loadFromDatabase(remote, id, revision)
+    return fixtureHelper._loadFromDatabase(remoteDB, id, revision)
       .then((fixtures) => {
         return fixtureHelper.store(fixtures, fixtureCollectionName)
           .then(() => fixtures);
@@ -91,12 +96,12 @@ var fixtureHelper = module.exports = {
 
     const id = fixtureHelper._buildId(fixtureCollectionName);
 
-    return db.get(id)
+    return localDB.get(id)
       .catch(fixtureHelper._swallow404)
       .then((existingFixtureRecord) => {
         if (existingFixtureRecord) {
           existingFixtureRecord.fixtures = [];
-          return db.put(existingFixtureRecord);
+          return localDB.put(existingFixtureRecord);
         }
       });
   },
@@ -108,7 +113,7 @@ var fixtureHelper = module.exports = {
 
     const id = fixtureHelper._buildId(fixtureCollectionName);
 
-    return remote.get(id, { revs_info: true })
+    return remoteDB.get(id, { revs_info: true })
       .catch(fixtureHelper._swallow404)
       .then((response) => {
         if (!response) {

@@ -22,52 +22,22 @@ describe('truman.js', ()=> {
 
   describe('initialize()', ()=> {
 
+    var options = null;
+
     beforeEach(() => {
       sandbox.stub(fixtureHelper, 'initialize');
+      sandbox.stub(truman, '_restoreState').returns(Promise.resolve());
+      options = {foo: 'bar'};
     });
 
     it('initializes the fixture helper with the provided options', ()=> {
-      var options = {foo: 'bar'};
       truman.initialize(options);
       expect(fixtureHelper.initialize).to.have.been.calledWith(options);
     });
 
-  });
-
-  describe('restoreState()', ()=> {
-    var fakeState = null;
-
-    beforeEach(() => {
-      fakeState = { fixtureCollectionName: 'foo' };
-      sandbox.stub(stateHelper, 'loadState').returns(fakeState);
-    });
-
-    describe('when in a recording state', ()=> {
-
-      beforeEach(() => {
-        fakeState.status = 'recording';
-        sandbox.stub(truman, 'record');
-      });
-
-      it('resumes recording', ()=> {
-        truman.restoreState();
-        expect(truman.record).to.have.been.calledOnce();
-      });
-
-    });
-
-    describe('when in a replaying state', ()=> {
-
-      beforeEach(() => {
-        fakeState.status = 'replaying';
-        sandbox.stub(truman, 'replay');
-      });
-
-      it('resumes replaying', ()=> {
-        truman.restoreState();
-        expect(truman.replay).to.have.been.calledOnce();
-      });
-
+    it('restores the truman state', ()=> {
+      truman.initialize(options);
+      expect(truman._restoreState).to.have.been.calledOnce;
     });
 
   });
@@ -112,6 +82,7 @@ describe('truman.js', ()=> {
       sandbox.stub(fixtureHelper, 'load').returns(Promise.resolve(['fixture']));
       sandbox.stub(sinon, 'useFakeXMLHttpRequest');
       sandbox.stub(xhrHelper, 'monkeyPatchXHR');
+      sandbox.stub(truman, 'currentStatus');
       XMLHttpRequest.addFilter = sinon.stub();
       sandbox.stub(stateHelper, 'updateState');
     });
@@ -166,6 +137,7 @@ describe('truman.js', ()=> {
       sandbox.stub(fixtureHelper, 'load').returns(Promise.resolve(['fixture']));
       respondWithStub = sinon.stub();
       sandbox.stub(sinon.fakeServer, 'create').returns({ respondWith: respondWithStub });
+      sandbox.stub(truman, 'currentStatus');
       XMLHttpRequest.addFilter = sinon.stub();
       sandbox.stub(stateHelper, 'updateState');
     });
@@ -195,7 +167,7 @@ describe('truman.js', ()=> {
 
     it('attaches a response filter to the fake server', (done)=> {
       truman.replay('collectionName').then(()=> {
-        expect(XMLHttpRequest.addFilter).to.have.been.calledOnce();
+        expect(XMLHttpRequest.filters[0]).to.be.a('function');
         done();
       });
     });
@@ -269,6 +241,44 @@ describe('truman.js', ()=> {
 
   });
 
+  describe('_restoreState()', ()=> {
+    var fakeState = null;
+
+    beforeEach(() => {
+      fakeState = { fixtureCollectionName: 'foo' };
+      sandbox.stub(stateHelper, 'loadState').returns(fakeState);
+    });
+
+    describe('when in a recording state', ()=> {
+
+      beforeEach(() => {
+        fakeState.status = 'recording';
+        sandbox.stub(truman, 'record');
+      });
+
+      it('resumes recording', ()=> {
+        truman._restoreState();
+        expect(truman.record).to.have.been.calledOnce();
+      });
+
+    });
+
+    describe('when in a replaying state', ()=> {
+
+      beforeEach(() => {
+        fakeState.status = 'replaying';
+        sandbox.stub(truman, 'replay');
+      });
+
+      it('resumes replaying', ()=> {
+        truman._restoreState();
+        expect(truman.replay).to.have.been.calledOnce();
+      });
+
+    });
+
+  });
+
   describe('_restoreXhr()', ()=> {
 
     beforeEach(()=> {
@@ -318,17 +328,17 @@ describe('truman.js', ()=> {
     var xhr = null;
 
     beforeEach(() => {
-      xhr = {};
+      xhr = { addEventListener: sinon.stub() };
     });
 
     it('attaches an onload handler to the xhr', ()=> {
       truman._storeXHRWhenReady(xhr, 'collectionName');
-      expect(xhr.onload).to.be.a('function');
+      expect(xhr.addEventListener).to.have.been.calledWith('load');
     });
 
     it('attaches additional actions to the existing onreadystatechange handler for the xhr', ()=> {
       truman._storeXHRWhenReady(xhr, 'collectionName');
-      expect(xhr.onreadystatechange).to.be.a('function');
+      expect(xhr.addEventListener).to.have.been.calledWith('readystatechange');
     });
 
   });
