@@ -10,6 +10,7 @@ var runSequence = require('run-sequence');
 var SOURCE_CODE = './src/**/*.js';
 var ENTRY_POINT = './src/truman.js';
 var BUILD_DEST = './dist/';
+var SANDBOX_DEST = './sandbox/';
 var BUILT_FILES = './dist/*.js';
 
 function logError (error) {
@@ -33,7 +34,8 @@ gulp.task('bundle', function() {
   return gulp.src(ENTRY_POINT)
     .pipe(webpack(webpackConfig))
     .on('error', logError)
-    .pipe(gulp.dest(BUILD_DEST));
+    .pipe(gulp.dest(BUILD_DEST))
+    .pipe(gulp.dest(SANDBOX_DEST));
 });
 
 // ---------------------------------

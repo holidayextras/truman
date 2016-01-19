@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Truman Sandbox</title>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-2.2.0.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
+	<script src="truman.js"></script>
+</head>
+<body>
+	<div class="container">
+    <div class="row">
+	    <div class="col-md-2">
+	    </div>
+	    <div class="col-md-8">
+        <div class="text-center">
+	        <h1>Truman Sandbox</h1>
+					<p>Open your web inspector to interact with the <code>truman</code> object on the window, use this box to make API requests:</p>
+          <div class="input-group pad_top">
+            <span class="input-group-addon">Make call to:</span>
+            <input id="interactive" type="text" class="form-control" value="http://netflixroulette.net/api/api.php?director=Quentin%20Tarantino">
+            <span class="input-group-btn"><button onclick="callUrl();return false;" class="btn btn-primary">submit</button></span>
+          </div>
+					<h3>Result</h3>
+        </div>
+				<pre id="response">
+				</pre>
+	    </div>
+	    <div class="col-md-2">
+	    </div>
+    </div><!--interactive row-->
+	</div>
+  <script>
+		var callUrl;
+		truman.initialize().then(function() {
+			callUrl = function(){
+	      $.ajax({
+		      dataType: 'json',
+		      url: $('#interactive').val()
+				}).complete(function(data) {
+					$('#response').html(data.responseText);
+				});
+	    }
+		});
+  </script>
+</body>
+</html>
