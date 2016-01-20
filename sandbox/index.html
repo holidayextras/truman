@@ -43,7 +43,7 @@
 		      dataType: 'json',
 		      url: $('#interactive').val()
 				}).complete(function(data) {
-					$('#response').html(data.responseText);
+					$('#response').html(JSON.stringify(data.responseJSON, null, 2));
 				});
 	    }
 		});
