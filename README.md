@@ -133,7 +133,7 @@ truman.restoreState()
 truman.initialize([config])
 ```
 
-`initialize` does exactly what is says on the tin, it initalizes the truman module with some provided config. See the config options section for more details on what config truman accepts.
+`initialize` does exactly what is says on the tin, it initializes the truman module with some provided config. See the config options section for more details on what config truman accepts.
 
 ### restore
 
@@ -163,5 +163,3 @@ truman.currentStatus()
 ```
 
 `currentStatus` returns the current status of the Truman module, either `'recording'`, `'replaying'` or `null`.
-
-## Config options

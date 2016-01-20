@@ -21,10 +21,10 @@ let truman = module.exports = {
     });
   },
 
-  pull(fixtureCollectionName, revision, callback) {
-    return fixtureHelper.pull(fixtureCollectionName, revision)
+  pull(fixtureCollectionName, tag, callback) {
+    return fixtureHelper.pull(fixtureCollectionName, tag)
       .then((fixtures) => {
-        const message = `Loaded ${fixtures.length} fixtures from the database (revision: ${(revision || '[LATEST]')})`;
+        const message = `Loaded ${fixtures.length} fixtures from the database (tag: ${(tag)})`;
         if (callback) {
           callback(message);
         }
@@ -160,16 +160,6 @@ let truman = module.exports = {
         if (callback) {
           callback();
         }
-      });
-  },
-
-  getRevisionMapping(fixtureCollectionName, callback) {
-    return fixtureHelper.getRevisionMapping(fixtureCollectionName)
-      .then((revisionMapping) => {
-        if (callback) {
-          callback(revisionMapping);
-        }
-        return revisionMapping;
       });
   },
 

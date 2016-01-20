@@ -16,10 +16,11 @@ var config = {
   localPouchDB: 'fixtures'
 };
 
-var localDB = null;
-var remoteDB = null;
+let localDB = null;
+let remoteDB = null;
+let cachedRevisionMapping = null;
 
-var fixtureHelper = module.exports = {
+let fixtureHelper = module.exports = {
   initialize(options) {
     config = options || config;
     window.PouchDB = PouchDB; // Necessary for the PouchDB Chrome inspector
@@ -76,16 +77,29 @@ var fixtureHelper = module.exports = {
       });
   },
 
-  pull(fixtureCollectionName, revision) {
+  pull(fixtureCollectionName, tag) {
     if (!fixtureCollectionName) {
       throw new Error(NO_NAME_ERR_MSG);
     }
 
-    const id = fixtureHelper._buildId(fixtureCollectionName);
-    return fixtureHelper._loadFromDatabase(remoteDB, id, revision)
-      .then((fixtures) => {
-        return fixtureHelper.store(fixtures, fixtureCollectionName)
-          .then(() => fixtures);
+    return fixtureHelper.getRevisionMapping(fixtureCollectionName)
+      .then((fixtureRevisionMapping) => {
+        const revisionMapping = fixtureRevisionMapping.find((fixtureMapping) => {
+          return tag === fixtureMapping.tag
+        });
+
+        if (!revisionMapping || !revisionMapping.revision) {
+          throw new Error('No revision found for tag.');
+        }
+
+        const id = fixtureHelper._buildId(fixtureCollectionName);
+        const revision = revisionMapping.revision;
+
+        return fixtureHelper._loadFromDatabase(remoteDB, id, revision)
+          .then((fixtures) => {
+            return fixtureHelper.store(fixtures, fixtureCollectionName)
+              .then(() => fixtures);
+          });
       });
   },
 
@@ -109,6 +123,10 @@ var fixtureHelper = module.exports = {
   getRevisionMapping(fixtureCollectionName) {
     if (!fixtureCollectionName) {
       throw new Error(NO_NAME_ERR_MSG);
+    }
+
+    if (cachedRevisionMapping) {
+      return cachedRevisionMapping;
     }
 
     const id = fixtureHelper._buildId(fixtureCollectionName);
@@ -140,6 +158,7 @@ var fixtureHelper = module.exports = {
           result.push({ revision: revision, tag: matchingTag });
         });
 
+        cachedRevisionMapping = result;
         return result;
       });
   },

@@ -49,8 +49,8 @@ describe('truman.js', ()=> {
     });
 
     it('pulls the named fixture collection from the remote server', ()=> {
-      truman.pull();
-      expect(fixtureHelper.pull).to.have.been.calledOnce();
+      truman.pull('collectionName', 'collectionTag');
+      expect(fixtureHelper.pull).to.have.been.calledWith('collectionName', 'collectionTag');
     });
 
   });
@@ -212,19 +212,6 @@ describe('truman.js', ()=> {
     it('clears the named fixture collection from the database', ()=> {
       truman.clear('collectionName');
       expect(fixtureHelper.clear).to.have.been.calledWith('collectionName');
-    });
-
-  });
-
-  describe('getRevisionMapping()', ()=> {
-
-    beforeEach(() => {
-      sandbox.stub(fixtureHelper, 'getRevisionMapping').returns(Promise.resolve());
-    });
-
-    it('pulls the revision mapping from the database', () => {
-      truman.getRevisionMapping('collectionName');
-      expect(fixtureHelper.getRevisionMapping).to.have.been.calledWith('collectionName')
     });
 
   });
