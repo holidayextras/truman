@@ -6,6 +6,9 @@ var del = require('del');
 var notify = require('gulp-notify');
 var changed = require('gulp-changed');
 var runSequence = require('run-sequence');
+var connect = require('gulp-connect');
+var connectRewrite = require('http-rewrite-middleware');
+var open = require('gulp-open');
 
 var SOURCE_CODE = './src/**/*.js';
 var ENTRY_POINT = './src/truman.js';
@@ -47,10 +50,37 @@ gulp.task('watch', function () {
   });
 });
 
+
+// ---------------------------------
+// --------- SERVER TASKS ----------
+// ---------------------------------
+gulp.task('connect', function() {
+  var middleware = connectRewrite.getMiddleware([
+    {from: '^([^.]+[^/])$', to: '$1.html'}
+  ]);
+
+  return connect.server({
+    root: 'sandbox',
+    livereload: true,
+    middleware: function(connect, options) {
+      return [middleware];
+    }
+  });
+});
+
+gulp.task('open', function(){
+  return gulp.src('./sandbox/index.html')
+  .pipe(open({
+    uri: 'http://localhost:8080',
+    app: 'google chrome'
+  }));
+});
+
+
 gulp.task('build', function(cb) {
   return runSequence('clean', 'bundle', cb)
 });
 
 gulp.task('start', function(cb) {
-  return runSequence('build', 'watch', cb);
+  return runSequence(['clean', 'connect'], 'bundle', ['watch', 'open'], cb);
 });
