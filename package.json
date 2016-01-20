@@ -1,7 +1,7 @@
 {
   "name": "truman",
   "version": "0.0.1",
-  "description": "Simple test fixtures for single page JavaScript applications",
+  "description": "Simple test fixtures for single page apps",
   "main": "src/truman.js",
   "engine": "node >= 4.1.1",
   "scripts": {
@@ -11,12 +11,15 @@
   "keywords": [
     "fixturing",
     "fixture",
+    "mock",
+    "http",
     "client",
     "single",
     "page",
     "record",
     "replay",
-    "XHR"
+    "XHR",
+    "SPA"
   ],
   "author": "Michael Carter",
   "license": "MIT",
