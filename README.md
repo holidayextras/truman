@@ -1,6 +1,6 @@
 # Truman (Work In Progress)
 
-### Simple test fixtures for single page JavaScript applications
+### Simple test fixtures for single page apps
 
 ## About
 
@@ -52,14 +52,11 @@ let config = {
   // Password for the remove CouchDB database.
   remotePassword: 'mycouchpassword',     
 
-  /*
-   * Domain synonyms let us treat requests to one domain as matches for requests to another. For example, you
-   * may record your fixtures against a local copy of an API but want to make sure those fixtures are replayed
-   * when requests to the staging copy of the API are made during your test run. Domain synonyms do just that.
-   * In the example below we're saying 'https://staging.myapi.com', 'https://staging2.myapi.com' are synonymous
-   * to 'http://localhost:8000'.
-   */
-
+  // Domain synonyms let us treat requests to one domain as matches for requests to another. For example, you
+  // may record your fixtures against a local copy of an API but want to make sure those fixtures are replayed
+  // when requests to the staging copy of the API are made during your test run. Domain synonyms do just that.
+  // In the example below we're saying 'https://staging.myapi.com', 'https://staging2.myapi.com' are synonymous
+  // to 'http://localhost:8000'.
   domainSynonyms: {
     'http://localhost:8000': ['https://staging.myapi.com', 'https://staging2.myapi.com']
   }
@@ -68,7 +65,15 @@ let config = {
 
 The truman module exposes the following methods:
 
-### record
+### initialize([config])
+
+```javascript
+truman.initialize([config])
+```
+
+`initialize` does exactly what is says on the tin, it initializes the truman module with some provided config. See the config options section for more details on what config truman accepts.
+
+### record(fixtureCollectionName, [callback])
 ```javascript
 truman.record(fixtureCollectionName, [callback])
 ```
@@ -80,7 +85,7 @@ truman.record(fixtureCollectionName, [callback])
 
 `record` returns a promise that resolves once the fixtures have begun recording. This promise is useful if you want to do something like only start your application once the module is recording.
 
-### replay
+### replay(fixtureCollectionName, [callback])
 ```javascript
 truman.replay(fixtureCollectionName, [callback])
 ```
@@ -93,7 +98,7 @@ truman.replay(fixtureCollectionName, [callback])
 
 `replay` returns a promise that resolves once the fixtures have begun replaying. This promise is useful if you want to do something like only start your application once the module is replaying.
 
-### push
+### push(fixtureCollectionName, tag, [callback])
 
 ```javascript
 truman.push(fixtureCollectionName, tag, [callback])
@@ -106,7 +111,7 @@ truman.push(fixtureCollectionName, tag, [callback])
 
 `push` takes a recorded fixture collection and pushes it to your remote database for persistence. `push` returns a promise that resolves once the fixture collection has been successfully pushed.
 
-### pull
+### pull(fixtureCollectionName, [tag], [callback])
 
 ```javascript
 truman.pull(fixtureCollectionName, [tag], [callback])
@@ -119,7 +124,7 @@ truman.pull(fixtureCollectionName, [tag], [callback])
 
 `pull` loads a recorded fixture collection from your remote database for into the browser. `pull` returns a promise that resolves once the fixtures have been successfully loaded from the remote database.
 
-### restoreState
+### restoreState()
 
 ```javascript
 truman.restoreState()
@@ -127,15 +132,7 @@ truman.restoreState()
 
 `restoreState` restores either the recording or replaying state of the Truman module. Typically this will be run shortly after the module has loaded, and is useful for auto-starting recording or replaying on new tabs.
 
-### initialize
-
-```javascript
-truman.initialize([config])
-```
-
-`initialize` does exactly what is says on the tin, it initializes the truman module with some provided config. See the config options section for more details on what config truman accepts.
-
-### restore
+### restore()
 
 ```javascript
 truman.restore()
@@ -144,7 +141,7 @@ truman.restore()
 `restore` simply stops any recording or replaying of fixtures currently in progress, and restores the XHR object to its original state.
 
 
-### clear
+### clear(fixtureCollectionName, [callback])
 
 ```javascript
 truman.clear(fixtureCollectionName, [callback])
@@ -156,10 +153,20 @@ truman.clear(fixtureCollectionName, [callback])
 `clear` simply removes all local fixtures belonging to the provided fixture collection name. `clear` returns a promise that resolves once the specified fixture collection has been cleared.
 
 
-### currentStatus
+### currentStatus()
 
 ```javascript
 truman.currentStatus()
 ```
 
 `currentStatus` returns the current status of the Truman module, either `'recording'`, `'replaying'` or `null`.
+
+## Development
+
+```
+npm install # Install dependencies
+npm start   # Run dev server with sandbox page and live reloading
+npm test    # Run the unit tests
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more information on making contributions.
