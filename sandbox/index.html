@@ -33,7 +33,11 @@
 	</div>
   <script>
 		var callUrl;
-		truman.initialize().then(function() {
+		truman.initialize({
+			database: {
+				url: 'http://127.0.0.1:5984/fixtures'
+			}
+		}).then(function() {
 			callUrl = function(){
 	      $.ajax({
 		      dataType: 'json',

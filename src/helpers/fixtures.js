@@ -22,19 +22,24 @@ let cachedRevisionMapping = null;
 
 let fixtureHelper = module.exports = {
   initialize(options) {
-    config = options || config;
+    _.assign(config, options);
     window.PouchDB = PouchDB; // Necessary for the PouchDB Chrome inspector
     localDB = new PouchDB('truman');
 
     if (config.database.url) {
-      remoteDB = new PouchDB(config.database.url, {
+      var remoteConfig = {
         ajax: {
-          timeout: 120000,
-          headers: {
-            Authorization: 'Basic ' + base64.encode(config.database.user + ':' + config.database.password)
-          }
+          timeout: 120000
         }
-      });
+      }
+
+      if (config.database.user && config.database.password) {
+        remoteConfig.ajax.headers = {
+          Authorization: 'Basic ' + base64.encode(config.database.user + ':' + config.database.password)
+        }
+      }
+
+      remoteDB = new PouchDB(config.database.url, remoteConfig);
     }
   },
 
@@ -82,6 +87,12 @@ let fixtureHelper = module.exports = {
       throw new Error(NO_NAME_ERR_MSG);
     }
 
+    const id = fixtureHelper._buildId(fixtureCollectionName);
+
+    if (!tag) {
+      return fixtureHelper._copyFromRemote(fixtureCollectionName, id);
+    }
+
     return fixtureHelper.getRevisionMapping(fixtureCollectionName)
       .then((fixtureRevisionMapping) => {
         const revisionMapping = fixtureRevisionMapping.find((fixtureMapping) => {
@@ -91,15 +102,9 @@ let fixtureHelper = module.exports = {
         if (!revisionMapping || !revisionMapping.revision) {
           throw new Error('No revision found for tag.');
         }
-
-        const id = fixtureHelper._buildId(fixtureCollectionName);
         const revision = revisionMapping.revision;
 
-        return fixtureHelper._loadFromDatabase(remoteDB, id, revision)
-          .then((fixtures) => {
-            return fixtureHelper.store(fixtures, fixtureCollectionName)
-              .then(() => fixtures);
-          });
+        return fixtureHelper._copyFromRemote(fixtureCollectionName, id, revision);
       });
   },
 
@@ -295,6 +300,14 @@ let fixtureHelper = module.exports = {
       .catch((err) => {
         fixtureHelper._swallow404(err);
         return [];
+      });
+  },
+
+  _copyFromRemote(fixtureCollectionName, id, revision) {
+    return fixtureHelper._loadFromDatabase(remoteDB, id, revision)
+      .then((fixtures) => {
+        return fixtureHelper.store(fixtures, fixtureCollectionName)
+          .then(() => fixtures);
       });
   },
 

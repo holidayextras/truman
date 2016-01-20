@@ -45,7 +45,20 @@ describe('truman.js', ()=> {
   describe('pull()', ()=> {
 
     beforeEach( ()=> {
-      sandbox.stub(fixtureHelper, 'pull').returns(Promise.resolve(['fixture']))
+      sandbox.stub(fixtureHelper, 'pull').returns(Promise.resolve(['fixture']));
+      sandbox.stub(truman, 'currentStatus');
+    });
+
+    describe('when the current status is not null', () => {
+
+      beforeEach(()=> {
+        truman.currentStatus.returns('RECORDING');
+      });
+
+      it('throws an error', ()=> {
+        expect(() => truman.pull('collectionName', 'collectionTag')).to.throw(Error);
+      });
+
     });
 
     it('pulls the named fixture collection from the remote server', ()=> {
@@ -60,6 +73,19 @@ describe('truman.js', ()=> {
     beforeEach(()=> {
       sandbox.spy(truman._storageFifo, 'then');
       sandbox.stub(fixtureHelper, 'push').returns(Promise.resolve(['fixture']));
+      sandbox.stub(truman, 'currentStatus');
+    });
+
+    describe('when the current status is not null', () => {
+
+      beforeEach(()=> {
+        truman.currentStatus.returns('RECORDING');
+      });
+
+      it('throws an error', ()=> {
+        expect(() => truman.push('collectionName', 'collectionTag')).to.throw(Error);
+      });
+
     });
 
     it('waits for the storage fifo to resolve', () => {

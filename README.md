@@ -70,7 +70,9 @@ The truman module exposes the following methods:
 truman.initialize([config])
 ```
 
-`initialize` does exactly what is says on the tin, it initializes the truman module with some provided config. See the config options section for more details on what config truman accepts.
+`initialize` does exactly what is says on the tin, it initializes the truman module with some provided config. It also restores either the recording or replaying state of the Truman module if it has previously been set to record or replay (on another tab or prior to a page refresh). See the config options section for more details on what config truman accepts.
+
+`initialize` returns a promise that resolves once initialization is complete.
 
 ### record(fixtureCollectionName, [callback])
 ```javascript
@@ -122,14 +124,6 @@ truman.pull(fixtureCollectionName, [tag], [callback])
 - **callback**: An optional callback if you're not using promises yet.
 
 `pull` loads a recorded fixture collection from your remote database for into the browser. `pull` returns a promise that resolves once the fixtures have been successfully loaded from the remote database.
-
-### restoreState()
-
-```javascript
-truman.restoreState()
-```
-
-`restoreState` restores either the recording or replaying state of the Truman module. Typically this will be run shortly after the module has loaded, and is useful for auto-starting recording or replaying on new tabs.
 
 ### restore()
 

@@ -22,9 +22,13 @@ let truman = module.exports = {
   },
 
   pull(fixtureCollectionName, tag, callback) {
+    if (truman.currentStatus()) {
+      throw new Error('Cannot pull when in either a recording or replaying state, call `truman.restore()` first.');
+    }
+
     return fixtureHelper.pull(fixtureCollectionName, tag)
       .then((fixtures) => {
-        const message = `Loaded ${fixtures.length} fixtures from the database (tag: ${(tag)})`;
+        const message = `Loaded ${fixtures.length} fixtures from the database (tag: ${(tag || '[LATEST]')})`;
         if (callback) {
           callback(message);
         }
@@ -36,6 +40,10 @@ let truman = module.exports = {
   },
 
   push(fixtureCollectionName, tag, callback) {
+    if (truman.currentStatus()) {
+      throw new Error('Cannot push when in either a recording or replaying state, call `truman.restore()` first.');
+    }
+
     return truman._storageFifo.then(() => {
       return fixtureHelper.push(fixtureCollectionName, tag)
         .then((fixtures) => {
