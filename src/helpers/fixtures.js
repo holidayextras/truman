@@ -13,7 +13,7 @@ var config = {
   omittedQueryParams: [],
   omittedDataParams: [],
   domainSynonyms: [],
-  localPouchDB: 'fixtures'
+  database: {}
 };
 
 let localDB = null;
@@ -24,14 +24,14 @@ let fixtureHelper = module.exports = {
   initialize(options) {
     config = options || config;
     window.PouchDB = PouchDB; // Necessary for the PouchDB Chrome inspector
-    localDB = new PouchDB(config.localPouchDB);
+    localDB = new PouchDB('truman');
 
-    if (config.remoteCouchDB) {
-      remoteDB = new PouchDB(config.remoteCouchDB, {
+    if (config.database.url) {
+      remoteDB = new PouchDB(config.database.url, {
         ajax: {
           timeout: 120000,
           headers: {
-            Authorization: 'Basic ' + base64.encode(config.remoteUser + ':' + config.remotePassword)
+            Authorization: 'Basic ' + base64.encode(config.database.user + ':' + config.database.password)
           }
         }
       });

@@ -40,18 +40,6 @@ let config = {
   // An array request body JSON parameters to omit from XHR comparison when matching fixtures.
   omittedDataParams: ['requestid'],
 
-  // Name of the local PouchDB database.
-  localPouchDB: 'fixtures',       
-
-  // URL for the remote CouchDB database.
-  remoteCouchDB: 'https://mycouchdburl.com',     
-
-  // Username for the remote CouchDB database.
-  remoteUser: 'mycouchuser',     
-
-  // Password for the remove CouchDB database.
-  remotePassword: 'mycouchpassword',     
-
   // Domain synonyms let us treat requests to one domain as matches for requests to another. For example, you
   // may record your fixtures against a local copy of an API but want to make sure those fixtures are replayed
   // when requests to the staging copy of the API are made during your test run. Domain synonyms do just that.
@@ -60,6 +48,17 @@ let config = {
   domainSynonyms: {
     'http://localhost:8000': ['https://staging.myapi.com', 'https://staging2.myapi.com']
   }
+
+  database: {
+    // URL for the remote CouchDB database.
+    url: 'https://mycouchdburl.com',
+
+    // Username for the remote CouchDB database.
+    user: 'mycouchuser',
+
+    // Password for the remove CouchDB database.
+    password: 'mycouchpassword'
+  }    
 }
 ```
 
