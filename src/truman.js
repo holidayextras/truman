@@ -5,6 +5,7 @@ let fixtureHelper = require('./helpers/fixtures.js');
 let stateHelper = require('./helpers/state.js');
 let xhrHelper = require('./helpers/xhr.js');
 let Promise = require('lie');
+let _ = require('lodash');
 var storageFixtures = [];
 
 const RECORDING_STATE = 'recording';
@@ -21,21 +22,25 @@ let truman = module.exports = {
     });
   },
 
-  pull(fixtureCollectionName, tag, callback) {
+  pull(fixtureCollectionName, tags, callback) {
     if (truman.currentStatus()) {
       throw new Error('Cannot pull when in either a recording or replaying state, call `truman.restore()` first.');
     }
 
-    return fixtureHelper.pull(fixtureCollectionName, tag)
-      .then((fixtures) => {
-        const message = `Loaded ${fixtures.length} fixtures from the database (tag: ${(tag || '[LATEST]')})`;
-        if (callback) {
-          callback(message);
-        }
-        console.log(`%c${message}`, 'color: green');
-      })
-      .catch((error) => {
-        console.error('%cERROR', 'color: red', error);
+    return fixtureHelper.getLatestRevisionMapping(fixtureCollectionName, tags)
+      .then((latestRevisionMapping)=> {
+        const latestTag = _.get(latestRevisionMapping, 'tag');
+        return fixtureHelper.pull(fixtureCollectionName, latestTag)
+          .then((fixtures) => {
+            const message = `Loaded ${fixtures.length} fixtures from the database (tag: ${(latestTag || '[LATEST]')})`;
+            if (callback) {
+              callback(message);
+            }
+            console.log(`%c${message}`, 'color: green');
+          })
+          .catch((error) => {
+            console.error('%cERROR', 'color: red', error);
+          });
       });
   },
 

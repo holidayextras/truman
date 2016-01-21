@@ -82,30 +82,21 @@ let fixtureHelper = module.exports = {
       });
   },
 
-  pull(fixtureCollectionName, tag) {
+  pull(fixtureCollectionName, tags) {
     if (!fixtureCollectionName) {
       throw new Error(NO_NAME_ERR_MSG);
     }
 
-    const id = fixtureHelper._buildId(fixtureCollectionName);
+    return fixtureHelper.getLatestRevisionMapping(fixtureCollectionName, tags)
+      .then((latestRevisionMapping) => {
+        const id = fixtureHelper._buildId(fixtureCollectionName);
 
-    if (!tag) {
-      return fixtureHelper._copyFromRemote(fixtureCollectionName, id);
-    }
-
-    return fixtureHelper.getRevisionMapping(fixtureCollectionName)
-      .then((fixtureRevisionMapping) => {
-        const revisionMapping = fixtureRevisionMapping.find((fixtureMapping) => {
-          return tag === fixtureMapping.tag
-        });
-
-        if (!revisionMapping || !revisionMapping.revision) {
-          throw new Error('No revision found for tag.');
+        if (!latestRevisionMapping) {
+          return fixtureHelper._copyFromRemote(fixtureCollectionName, id);
         }
-        const revision = revisionMapping.revision;
 
-        return fixtureHelper._copyFromRemote(fixtureCollectionName, id, revision);
-      });
+        return fixtureHelper._copyFromRemote(fixtureCollectionName, id, latestRevisionMapping.revision);
+      })
   },
 
   clear(fixtureCollectionName) {
@@ -125,46 +116,18 @@ let fixtureHelper = module.exports = {
       });
   },
 
-  getRevisionMapping(fixtureCollectionName) {
+  getLatestRevisionMapping(fixtureCollectionName, tags) {
     if (!fixtureCollectionName) {
       throw new Error(NO_NAME_ERR_MSG);
     }
 
-    if (cachedRevisionMapping) {
-      return cachedRevisionMapping;
+    if (!_.isArray(tags)) {
+      tags = _.compact([tags]);
     }
 
-    const id = fixtureHelper._buildId(fixtureCollectionName);
-
-    return remoteDB.get(id, { revs_info: true })
-      .catch(fixtureHelper._swallow404)
-      .then((response) => {
-        if (!response) {
-          return [];
-        }
-
-        const tagMapping = response.localRevisionMap;
-        const availableRevisions = response._revs_info
-          .filter((revInfo) => revInfo.status === 'available')
-          .map((revInfo) => revInfo.rev);
-
-        let result = [];
-
-        _.each(availableRevisions, (revision) => {
-          let matchingTag = null;
-
-          for (const tag in tagMapping) {
-            if (Number.parseInt(revision.match(/[^-]+/)[0], 10) === tagMapping[tag]) {
-              matchingTag = tag;
-              break;
-            }
-          }
-
-          result.push({ revision: revision, tag: matchingTag });
-        });
-
-        cachedRevisionMapping = result;
-        return result;
+    return fixtureHelper._getRevisionMapping(fixtureCollectionName)
+      .then((fixtureRevisionMappings) => {
+        return fixtureRevisionMappings.find((fixtureRevisionMapping) => _.includes(tags, fixtureRevisionMapping.tag));
       });
   },
 
@@ -264,6 +227,49 @@ let fixtureHelper = module.exports = {
       requestBody: xhr.requestBody
     };
     return fixtureHelper.find(fixtures, findObject);
+  },
+
+  _getRevisionMapping(fixtureCollectionName) {
+    if (!fixtureCollectionName) {
+      throw new Error(NO_NAME_ERR_MSG);
+    }
+
+    if (cachedRevisionMapping) {
+      return Promise.resolve(cachedRevisionMapping);
+    }
+
+    const id = fixtureHelper._buildId(fixtureCollectionName);
+
+    return remoteDB.get(id, { revs_info: true })
+      .catch(fixtureHelper._swallow404)
+      .then((response) => {
+        if (!response) {
+          return [];
+        }
+
+        const tagMapping = response.localRevisionMap;
+        const availableRevisions = response._revs_info
+          .filter((revInfo) => revInfo.status === 'available')
+          .map((revInfo) => revInfo.rev);
+
+        let result = [];
+
+        _.each(availableRevisions, (revision) => {
+          let matchingTag = null;
+
+          for (const tag in tagMapping) {
+            if (Number.parseInt(revision.match(/[^-]+/)[0], 10) === tagMapping[tag]) {
+              matchingTag = tag;
+              break;
+            }
+          }
+
+          result.push({ revision: revision, tag: matchingTag });
+        });
+
+        cachedRevisionMapping = result;
+        return result;
+      });
   },
 
   _storeToDatabase(database, id, fixtureRecord, tag) {

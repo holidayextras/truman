@@ -44,7 +44,8 @@ describe('truman.js', ()=> {
 
   describe('pull()', ()=> {
 
-    beforeEach( ()=> {
+    beforeEach(()=> {
+      sandbox.stub(fixtureHelper, 'getLatestRevisionMapping').returns(Promise.resolve({tag: 'collectionTag'}));
       sandbox.stub(fixtureHelper, 'pull').returns(Promise.resolve(['fixture']));
       sandbox.stub(truman, 'currentStatus');
     });
@@ -61,9 +62,16 @@ describe('truman.js', ()=> {
 
     });
 
-    it('pulls the named fixture collection from the remote server', ()=> {
-      truman.pull('collectionName', 'collectionTag');
-      expect(fixtureHelper.pull).to.have.been.calledWith('collectionName', 'collectionTag');
+    it('gets the latest revision mapping for the fixture and number of possible tags that may match that fixture.', ()=> {
+      truman.pull('collectionName', ['foo', 'collectionTag', 'bar']);
+      expect(fixtureHelper.getLatestRevisionMapping).to.have.been.calledWith('collectionName', ['foo', 'collectionTag', 'bar'])
+    });
+
+    it('pulls the named fixture collection from the remote server', (done)=> {
+      truman.pull('collectionName', 'collectionTag').then(() => {
+        expect(fixtureHelper.pull).to.have.been.calledWith('collectionName', 'collectionTag');
+        done();
+      });
     });
 
   });
