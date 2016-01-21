@@ -42,7 +42,8 @@ gulp.task('bundle', function() {
     .pipe(rename('truman.min.js'))
     .pipe(gulp.dest(BUILD_DEST))
     .pipe(gulp.dest(SANDBOX_DEST))
-    .pipe(gzip({ append: true }))
+    .pipe(gzip())
+    .pipe(rename('truman.min.gz.js'))
     .pipe(gulp.dest(BUILD_DEST))
 });
 
