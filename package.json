@@ -5,6 +5,8 @@
   "main": "src/truman.js",
   "engine": "node >= 4.1.1",
   "scripts": {
+    "release": "./scripts/release.sh",
+    "build": "gulp build",
     "test": "mocha test --recursive",
     "start": "gulp start"
   },
