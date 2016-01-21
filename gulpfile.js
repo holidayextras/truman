@@ -9,6 +9,8 @@ var runSequence = require('run-sequence');
 var connect = require('gulp-connect');
 var connectRewrite = require('http-rewrite-middleware');
 var open = require('gulp-open');
+var rename = require('gulp-rename');
+var gzip = require('gulp-gzip');
 
 var SOURCE_CODE = './src/**/*.js';
 var ENTRY_POINT = './src/truman.js';
@@ -37,8 +39,11 @@ gulp.task('bundle', function() {
   return gulp.src(ENTRY_POINT)
     .pipe(webpack(webpackConfig))
     .on('error', logError)
+    .pipe(rename('truman.min.js'))
     .pipe(gulp.dest(BUILD_DEST))
-    .pipe(gulp.dest(SANDBOX_DEST));
+    .pipe(gulp.dest(SANDBOX_DEST))
+    .pipe(gzip({ append: true }))
+    .pipe(gulp.dest(BUILD_DEST))
 });
 
 // ---------------------------------

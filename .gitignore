@@ -1,4 +1,4 @@
 node_modules
 dist
-sandbox/truman.js
+sandbox/truman.min.js
 npm-debug.log
