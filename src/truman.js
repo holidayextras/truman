@@ -14,11 +14,26 @@ const REPLAYING_STATE = 'replaying';
 let truman = module.exports = {
 
   _storageFifo: Promise.resolve(),
+  _initialized: false,
 
-  initialize(options) {
+  initialize(options, callback) {
+    const message = 'Truman is up and running!';
+
+    if (truman._initialized) {
+      if (callback) {
+        callback(message);
+      }
+      return Promise.resolve(message);
+    }
+
     fixtureHelper.initialize(options);
     return truman._restoreState().then(() => {
-      console.log('%cTruman is up and running!', 'color: green');
+      truman._initialized = true;
+      console.log(`%c${message}`, 'color: green');
+      if (callback) {
+        callback(message);
+      }
+      return message;
     });
   },
 

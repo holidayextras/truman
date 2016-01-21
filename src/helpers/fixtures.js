@@ -13,7 +13,6 @@ var config = {
   omittedQueryParams: [],
   omittedDataParams: [],
   domainSynonyms: [],
-  database: {}
 };
 
 let localDB = null;
@@ -26,8 +25,8 @@ let fixtureHelper = module.exports = {
     window.PouchDB = PouchDB; // Necessary for the PouchDB Chrome inspector
     localDB = new PouchDB('truman');
 
-    if (config.database.url) {
-      var remoteConfig = {
+    if (config.database) {
+      let remoteConfig = {
         ajax: {
           timeout: 120000
         }
