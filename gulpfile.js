@@ -10,7 +10,6 @@ var connect = require('gulp-connect');
 var connectRewrite = require('http-rewrite-middleware');
 var open = require('gulp-open');
 var rename = require('gulp-rename');
-var gzip = require('gulp-gzip');
 
 var SOURCE_CODE = './src/**/*.js';
 var ENTRY_POINT = './src/truman.js';
@@ -42,9 +41,6 @@ gulp.task('bundle', function() {
     .pipe(rename('truman.min.js'))
     .pipe(gulp.dest(BUILD_DEST))
     .pipe(gulp.dest(SANDBOX_DEST))
-    .pipe(gzip())
-    .pipe(rename('truman.min.gz.js'))
-    .pipe(gulp.dest(BUILD_DEST))
 });
 
 // ---------------------------------
