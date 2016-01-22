@@ -30,6 +30,7 @@ describe('truman.js', ()=> {
       sandbox.stub(fixtureHelper, 'initialize');
       sandbox.stub(truman, '_restoreState').returns(Promise.resolve());
       options = { foo: 'bar' };
+      truman._initialized = false;
     });
 
     it('initializes the fixture helper with the provided options', ()=> {
