@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/holidayextras/truman.svg?branch=master)](https://travis-ci.org/holidayextras/truman) [![Dependency Status](https://david-dm.org/holidayextras/truman.svg)](https://david-dm.org/)
 
-# Truman
+# Truman ![Truman Logo](http://i.imgur.com/BkGRQbp.png)
 
 ### Simple test fixtures for single page apps
 
