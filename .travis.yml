@@ -1,0 +1,9 @@
+language: node_js
+node_js:
+  - "4"
+script: "npm run $TEST_STEP"
+env:
+  matrix:
+    - TEST_STEP=test
+notifications:
+  email: false

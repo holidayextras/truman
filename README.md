@@ -1,4 +1,4 @@
-# Truman (Work In Progress)
+# Truman
 
 ### Simple test fixtures for single page apps
 
@@ -112,15 +112,15 @@ truman.push(fixtureCollectionName, tag, [callback])
 
 `push` takes a recorded fixture collection and pushes it to your remote database for persistence. `push` returns a promise that resolves once the fixture collection has been successfully pushed.
 
-### pull(fixtureCollectionName, [tag], [callback])
+### pull(fixtureCollectionName, [tag(s)], [callback])
 
 ```javascript
-truman.pull(fixtureCollectionName, [tag], [callback])
+truman.pull(fixtureCollectionName, [tag(s)], [callback])
 ```
 
 #### Parameters
 - **fixtureCollectionName**: A name for the collection of fixtures you'd like to pull from your remote database.
-- **tag**: The tag of the version of the fixture collection you'd like to load.
+- **tag(s)**: The tags or tag of the version of the fixture collection you'd like to load. When given an array of tags Truman will use the first tag it finds a match for in the array, when given a string truman will attempt to match the tag exactly.
 - **callback**: An optional callback if you're not using promises yet.
 
 `pull` loads a recorded fixture collection from your remote database for into the browser. `pull` returns a promise that resolves once the fixtures have been successfully loaded from the remote database.
