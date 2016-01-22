@@ -1,4 +1,5 @@
 var webpack = require('webpack');
+var path = require('path');
 
 var uglify = new webpack.optimize.UglifyJsPlugin({
   comments: false,
@@ -25,10 +26,12 @@ module.exports = {
         exclude: /(node_modules)/,
         loader: 'babel', // 'babel-loader' is also a legal name to reference
         query: {
-          presets: ['es2015']
+          presets: ['es2015'],
+          cacheDirectory: true
         }
       }
     ]
   },
-  plugins: [uglify]
+  plugins: [uglify],
+  recordsPath: path.resolve('/tmp/webpack.json')
 };
