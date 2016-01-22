@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/holidayextras/truman.svg?branch=master)](https://travis-ci.org/holidayextras/truman)
+
 # Truman
 
 ### Simple test fixtures for single page apps
