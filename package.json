@@ -7,6 +7,7 @@
   "scripts": {
     "release": "./scripts/release.sh",
     "build": "gulp build",
+    "lint": "make-up test src",
     "test": "mocha test --recursive",
     "start": "gulp start"
   },
@@ -49,6 +50,7 @@
     "http-rewrite-middleware": "^0.1.6",
     "imports-loader": "^0.6.5",
     "jsdom": "^7.2.2",
+    "make-up": "^7.1.0",
     "mocha": "^2.3.4",
     "run-sequence": "^1.1.5",
     "sinon-chai": "git+https://github.com/sjmulder/sinon-chai.git#pr/sinon-2.0.0-pre",

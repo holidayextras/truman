@@ -1,3 +1,5 @@
+'use strict';
+
 require('../mochaSetup.js');
 
 var chai = require('chai');
@@ -27,7 +29,7 @@ describe('truman.js', ()=> {
     beforeEach(() => {
       sandbox.stub(fixtureHelper, 'initialize');
       sandbox.stub(truman, '_restoreState').returns(Promise.resolve());
-      options = {foo: 'bar'};
+      options = { foo: 'bar' };
     });
 
     it('initializes the fixture helper with the provided options', ()=> {
@@ -37,7 +39,7 @@ describe('truman.js', ()=> {
 
     it('restores the truman state', ()=> {
       truman.initialize(options);
-      expect(truman._restoreState).to.have.been.calledOnce;
+      expect(truman._restoreState).to.have.been.calledOnce();
     });
 
   });
@@ -45,7 +47,7 @@ describe('truman.js', ()=> {
   describe('pull()', ()=> {
 
     beforeEach(()=> {
-      sandbox.stub(fixtureHelper, 'getLatestRevisionMapping').returns(Promise.resolve({tag: 'collectionTag'}));
+      sandbox.stub(fixtureHelper, 'getLatestRevisionMapping').returns(Promise.resolve({ tag: 'collectionTag' }));
       sandbox.stub(fixtureHelper, 'pull').returns(Promise.resolve(['fixture']));
       sandbox.stub(truman, 'currentStatus');
     });
@@ -64,7 +66,7 @@ describe('truman.js', ()=> {
 
     it('gets the latest revision mapping for the fixture and number of possible tags that may match that fixture.', ()=> {
       truman.pull('collectionName', ['foo', 'collectionTag', 'bar']);
-      expect(fixtureHelper.getLatestRevisionMapping).to.have.been.calledWith('collectionName', ['foo', 'collectionTag', 'bar'])
+      expect(fixtureHelper.getLatestRevisionMapping).to.have.been.calledWith('collectionName', ['foo', 'collectionTag', 'bar']);
     });
 
     it('pulls the named fixture collection from the remote server', (done)=> {
@@ -331,7 +333,7 @@ describe('truman.js', ()=> {
     });
 
     it('adds the given XHR to the database', () => {
-      truman._storeXHR({ url: 'foo.bar' }, 'collectionName')
+      truman._storeXHR({ url: 'foo.bar' }, 'collectionName');
       expect(fixtureHelper.addXhr).to.have.been.calledOnce();
     });
 

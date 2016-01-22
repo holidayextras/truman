@@ -1,7 +1,9 @@
-var webpack = require('webpack');
-var path = require('path');
+'use strict';
 
-var uglify = new webpack.optimize.UglifyJsPlugin({
+const webpack = require('webpack');
+const path = require('path');
+
+const uglify = new webpack.optimize.UglifyJsPlugin({
   comments: false,
   sourceMap: false,
   mangle: false,
@@ -16,8 +18,8 @@ module.exports = {
   output: {
     path: __dirname,
     filename: 'truman.js',
-    libraryTarget: "var",
-    library: "truman"
+    libraryTarget: 'var',
+    library: 'truman'
   },
   module: {
     loaders: [

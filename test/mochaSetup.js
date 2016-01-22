@@ -1,3 +1,5 @@
+'use strict';
+
 var jsdom = require('jsdom');
 var XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 

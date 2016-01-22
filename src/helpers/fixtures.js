@@ -4,7 +4,6 @@ let _ = require('lodash');
 let omitDeep = require('omit-deep');
 let xhrHelper = require('./xhr');
 let PouchDB = require('pouchdb');
-let base64 = require('../lib/base64');
 
 const STORAGE_PREFIX = 'fixture-';
 const NO_NAME_ERR_MSG = 'Fixture collection name not provided.';
@@ -12,7 +11,7 @@ const NO_NAME_ERR_MSG = 'Fixture collection name not provided.';
 var config = {
   omittedQueryParams: [],
   omittedDataParams: [],
-  domainSynonyms: [],
+  domainSynonyms: []
 };
 
 let localDB = null;
@@ -30,12 +29,12 @@ let fixtureHelper = module.exports = {
         ajax: {
           timeout: 120000
         }
-      }
+      };
 
       if (config.database.user && config.database.password) {
         remoteConfig.ajax.headers = {
-          Authorization: 'Basic ' + base64.encode(config.database.user + ':' + config.database.password)
-        }
+          Authorization: 'Basic ' + window.btoa(config.database.user + ':' + config.database.password)
+        };
       }
 
       remoteDB = new PouchDB(config.database.url, remoteConfig);
@@ -95,7 +94,7 @@ let fixtureHelper = module.exports = {
         }
 
         return fixtureHelper._copyFromRemote(fixtureCollectionName, id, latestRevisionMapping.revision);
-      })
+      });
   },
 
   clear(fixtureCollectionName) {

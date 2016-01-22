@@ -4,6 +4,8 @@ node_js:
 script: "npm run $TEST_STEP"
 env:
   matrix:
+    - TEST_STEP=build
+    - TEST_STEP=lint
     - TEST_STEP=test
 notifications:
   email: false
