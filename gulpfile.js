@@ -1,25 +1,25 @@
 'use strict';
 
-const gulp = require('gulp');
-const watch = require('gulp-watch');
-const webpack = require('webpack-stream');
-const webpackConfig = require('./webpack.config.js');
-const del = require('del');
-const notify = require('gulp-notify');
-const runSequence = require('run-sequence');
-const connect = require('gulp-connect');
-const connectRewrite = require('http-rewrite-middleware');
-const open = require('gulp-open');
-const rename = require('gulp-rename');
+var gulp = require('gulp');
+var watch = require('gulp-watch');
+var webpack = require('webpack-stream');
+var webpackConfig = require('./webpack.config.js');
+var del = require('del');
+var notify = require('gulp-notify');
+var runSequence = require('run-sequence');
+var connect = require('gulp-connect');
+var connectRewrite = require('http-rewrite-middleware');
+var open = require('gulp-open');
+var rename = require('gulp-rename');
 
-const SOURCE_CODE = './src/**/*.js';
-const ENTRY_POINT = './src/truman.js';
-const BUILD_DEST = './dist/';
-const SANDBOX_DEST = './sandbox/';
-const BUILT_FILES = './dist/*.js';
+var SOURCE_CODE = './src/**/*.js';
+var ENTRY_POINT = './src/truman.js';
+var BUILD_DEST = './dist/';
+var SANDBOX_DEST = './sandbox/';
+var BUILT_FILES = './dist/*.js';
 
 function logError(error) {
-  const errorString = error.toString();
+  var errorString = error.toString();
   notify.onError({
     title: 'Build Error',
     message: errorString
@@ -58,7 +58,7 @@ gulp.task('watch', function() {
 // --------- SERVER TASKS ----------
 // ---------------------------------
 gulp.task('connect', function() {
-  const middleware = connectRewrite.getMiddleware([
+  var middleware = connectRewrite.getMiddleware([
     { from: '^([^.]+[^/])$', to: '$1.html' }
   ]);
 

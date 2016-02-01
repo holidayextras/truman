@@ -1,9 +1,9 @@
 'use strict';
 
-const webpack = require('webpack');
-const path = require('path');
+var webpack = require('webpack');
+var path = require('path');
 
-const uglify = new webpack.optimize.UglifyJsPlugin({
+var uglify = new webpack.optimize.UglifyJsPlugin({
   comments: false,
   sourceMap: false,
   mangle: false,
