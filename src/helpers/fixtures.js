@@ -184,7 +184,7 @@ let fixtureHelper = module.exports = {
         try {
           parsedOptionRequestBody = omitDeep(JSON.parse(options.requestBody), config.omittedDataParams);
         } catch (e) {
-          console.error("Could not parse option request body for", options.url, options.requestBody);
+          console.error('Could not parse option request body for', options.url, options.requestBody);
         }
 
         let parsedFixtureRequestBody = null;
@@ -192,7 +192,7 @@ let fixtureHelper = module.exports = {
         try {
           parsedFixtureRequestBody = omitDeep(JSON.parse(fixture.request.body), config.omittedDataParams);
         } catch (e) {
-          console.error("Could not parse fixture request body for", fixture.request.url, fixture.request.body);
+          console.error('Could not parse fixture request body for', fixture.request.url, fixture.request.body);
         }
 
 
