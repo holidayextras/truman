@@ -4,6 +4,8 @@ let sinon = require('sinon');
 let fixtureHelper = require('./helpers/fixtures.js');
 let stateHelper = require('./helpers/state.js');
 let xhrHelper = require('./helpers/xhr.js');
+let loggingHelper = require('./helpers/logging.js');
+
 let Promise = require('lie');
 let _ = require('lodash');
 var storageFixtures = [];
@@ -29,7 +31,7 @@ let truman = module.exports = {
     fixtureHelper.initialize(options);
     return truman._restoreState().then(() => {
       truman._initialized = true;
-      console.log(`%c${message}`, 'color: green');
+      loggingHelper.log(`%c${message}`, 'color: green');
       if (callback) {
         callback(message);
       }
@@ -51,10 +53,10 @@ let truman = module.exports = {
             if (callback) {
               callback(message);
             }
-            console.log(`%c${message}`, 'color: green');
+            loggingHelper.log(`%c${message}`, 'color: green');
           })
           .catch((error) => {
-            console.error('%cERROR', 'color: red', error);
+            loggingHelper.error('%cERROR', 'color: red', error);
           });
       });
   },
@@ -71,10 +73,10 @@ let truman = module.exports = {
           if (callback) {
             callback(message);
           }
-          console.log(`%c${message}`, 'color: green');
+          loggingHelper.log(`%c${message}`, 'color: green');
         })
         .catch((error) => {
-          console.error('%cERROR', 'color: red', error);
+          loggingHelper.error('%cERROR', 'color: red', error);
         });
     });
   },
@@ -102,7 +104,7 @@ let truman = module.exports = {
           return truman._storeXHRWhenReady(xhr, fixtureCollectionName);
         };
 
-        console.log('%cRECORDING NEW FIXTURES', 'color: red');
+        loggingHelper.log('%cRECORDING NEW FIXTURES', 'color: red');
       })
       .then(() => {
         stateHelper.updateState({
@@ -139,11 +141,11 @@ let truman = module.exports = {
             }
 
             xhr.respond(fixture.response.status, fixture.response.headers, fixture.response.body);
-            console.log(`%cREPLAY%c: ${fixture.request.method} ${fixture.request.url}`, 'color: green', 'color: black');
-            console.log(xhr, fixture);
+            loggingHelper.log(`%cREPLAY%c: ${fixture.request.method} ${fixture.request.url}`, 'color: green', 'color: black');
+            loggingHelper.log(xhr, fixture);
           } else {
-            console.log(`%cNOT FOUND%c: ${xhr.method} ${xhr.url}`, 'color: red', 'color: black');
-            console.log(xhr, fixtures);
+            loggingHelper.log(`%cNOT FOUND%c: ${xhr.method} ${xhr.url}`, 'color: red', 'color: black');
+            loggingHelper.log(xhr, fixtures);
           }
         });
 
@@ -153,8 +155,8 @@ let truman = module.exports = {
           (method, url) => {
             const foundFixtures = fixtureHelper.find(fixtures, { method: method, url: url }).length;
             if (!foundFixtures) {
-              console.log(`%cCALLTHROUGH%c: ${url}`, 'color: grey', 'color: black');
-              console.log(fixtures);
+              loggingHelper.log(`%cCALLTHROUGH%c: ${url}`, 'color: grey', 'color: black');
+              loggingHelper.log(fixtures);
             }
             return !foundFixtures; // true = allow, false = stub
           }
@@ -171,20 +173,20 @@ let truman = module.exports = {
           callback(message);
         }
 
-        console.log(`%c${message}`, 'color: green');
+        loggingHelper.log(`%c${message}`, 'color: green');
       });
   },
 
   restore() {
     truman._restoreXhr();
     stateHelper.updateState(null);
-    console.log('%cRESTORED%c: All XHR requests unstubbed.', 'color: green', 'color: black');
+    loggingHelper.log('%cRESTORED%c: All XHR requests unstubbed.', 'color: green', 'color: black');
   },
 
   clear(fixtureCollectionName, callback) {
     return fixtureHelper.clear(fixtureCollectionName)
       .then(() => {
-        console.log('%cCLEARED%c: All local fixtures cleared.', 'color: green', 'color: black');
+        loggingHelper.log('%cCLEARED%c: All local fixtures cleared.', 'color: green', 'color: black');
         if (callback) {
           callback();
         }
@@ -215,7 +217,7 @@ let truman = module.exports = {
   },
 
   _storeXHR(xhr, fixtureCollectionName) {
-    console.log(`%cRECORDING%c: ${xhr.url}`, 'color: red', 'color: black');
+    loggingHelper.log(`%cRECORDING%c: ${xhr.url}`, 'color: red', 'color: black');
     fixtureHelper.addXhr(storageFixtures, xhr);
     xhr.fixtured = true;
     truman._storageFifo = truman._storageFifo.then(() => fixtureHelper.store(storageFixtures, fixtureCollectionName));

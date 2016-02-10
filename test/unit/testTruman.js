@@ -14,12 +14,13 @@ var truman = require('../../src/truman.js');
 var fixtureHelper = require('../../src/helpers/fixtures.js');
 var stateHelper = require('../../src/helpers/state.js');
 var xhrHelper = require('../../src/helpers/xhr.js');
+var loggingHelper = require('../../src/helpers/logging.js');
 
 describe('truman.js', ()=> {
   // Set up our stub restoration for this suite.
   var sandbox = sinon.sandbox.create();
 
-  beforeEach(() => sandbox.stub(console, 'log') );
+  beforeEach(() => sandbox.stub(loggingHelper, 'log') );
   afterEach(() => sandbox.restore() );
 
   describe('initialize()', ()=> {
