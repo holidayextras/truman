@@ -27,11 +27,12 @@
   "author": "Michael Carter",
   "license": "MIT",
   "dependencies": {
+    "Base64": "^0.3.0",
     "lie": "^3.0.1",
     "lodash": "^3.10.1",
+    "omit-deep": "^0.1.2",
     "pouchdb": "^5.1.0",
-    "sinon": "git+https://github.com/sinonjs/sinon.git",
-    "omit-deep": "^0.1.2"
+    "sinon": "git+https://github.com/sinonjs/sinon.git"
   },
   "devDependencies": {
     "babel-core": "^6.4.0",
