@@ -1,7 +1,7 @@
 'use strict';
 
-let logImplementation = () => {}
-let errorImplementation = () => {}
+let logImplementation = () => {};
+let errorImplementation = () => {};
 
 if (typeof console !== undefined) {
   if (console.log) {
@@ -13,7 +13,7 @@ if (typeof console !== undefined) {
   }
 }
 
-let loggingHelper = module.exports = {
+module.exports = {
   log() {
     logImplementation.apply(null, arguments);
   },
