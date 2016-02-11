@@ -17,7 +17,7 @@ module.exports = function(config) {
     preprocessors: {
       'test/tests.webpack.js': [ 'webpack', 'sourcemap' ]
     },
-    reporters: [ 'dots', 'saucelabs' ],
+    reporters: [ 'spec', 'saucelabs' ],
     webpack: {
       devtool: 'inline-source-map',
       module: {
