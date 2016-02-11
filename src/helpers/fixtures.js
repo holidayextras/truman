@@ -1,5 +1,7 @@
 'use strict';
 
+require('Base64');
+
 let _ = require('lodash');
 let omitDeep = require('omit-deep');
 let xhrHelper = require('./xhr');

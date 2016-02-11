@@ -159,9 +159,18 @@ truman.currentStatus()
 ## Development
 
 ```
-npm install # Install dependencies
-npm start   # Run dev server with sandbox page and live reloading
-npm test    # Run the unit tests
+npm install   # Install dependencies
+npm start     # Run dev server with sandbox page and live reloading
+npm run lint  # Check code style
+
+# Run the unit tests in node
+npm test
+
+# Run the unit tests in chrome
+npm run karma
+
+# Run the unit tests in multiple browsers, on Sauce Labs (replace xxx with your credentials)
+USE_CLOUD=t SAUCE_USERNAME=xxx SAUCE_PASSWORD=xxx npm run karma
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more information on making contributions.

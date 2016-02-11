@@ -35,5 +35,5 @@ module.exports = {
     ]
   },
   plugins: [uglify],
-  recordsPath: path.resolve('/tmp/webpack.json')
+  recordsPath: path.resolve('/tmp/truman.webpack.json')
 };

@@ -1,7 +1,5 @@
 'use strict';
 
-require('../mochaSetup.js');
-
 var chai = require('chai');
 var expect = chai.expect;
 var sinon = require('sinon');
@@ -14,12 +12,15 @@ var truman = require('../../src/truman.js');
 var fixtureHelper = require('../../src/helpers/fixtures.js');
 var stateHelper = require('../../src/helpers/state.js');
 var xhrHelper = require('../../src/helpers/xhr.js');
+var loggingHelper = require('../../src/helpers/logging.js');
+
+var Promise = require('lie');
 
 describe('truman.js', ()=> {
   // Set up our stub restoration for this suite.
   var sandbox = sinon.sandbox.create();
 
-  beforeEach(() => sandbox.stub(console, 'log') );
+  beforeEach(() => sandbox.stub(loggingHelper, 'log') );
   afterEach(() => sandbox.restore() );
 
   describe('initialize()', ()=> {
@@ -128,30 +129,32 @@ describe('truman.js', ()=> {
       delete XMLHttpRequest.addFilter;
     });
 
-    it('loads the fixtures from the database', ()=> {
-      truman.record('collectionName');
-      expect(fixtureHelper.load).to.have.been.calledOnce();
+    it('loads the fixtures from the database', (done) => {
+      truman.record('collectionName').then(() => {
+        expect(fixtureHelper.load).to.have.been.calledOnce();
+        done();
+      }).catch(done);
     });
 
     it('starts using the fake XHR provided by sinon', (done)=> {
       truman.record('collectionName').then(()=> {
         expect(sinon.useFakeXMLHttpRequest).to.have.been.calledOnce();
         done();
-      });
+      }).catch(done);
     });
 
     it('adds a request filter for recording XHRs', (done)=> {
       truman.record('collectionName').then(()=> {
         expect(XMLHttpRequest.addFilter).to.have.been.calledOnce();
         done();
-      });
+      }).catch(done);
     });
 
     it('applies further monkeypatching to the XHR', (done)=> {
       truman.record('collectionName').then(()=> {
         expect(xhrHelper.monkeyPatchXHR).to.have.been.calledOnce();
         done();
-      });
+      }).catch(done);
     });
 
     it('sets the state to recording', (done)=> {
@@ -161,7 +164,7 @@ describe('truman.js', ()=> {
           status: 'recording'
         });
         done();
-      });
+      }).catch(done);
     });
 
   });
@@ -183,30 +186,32 @@ describe('truman.js', ()=> {
       delete XMLHttpRequest.addFilter;
     });
 
-    it('loads the fixture collection', ()=> {
-      truman.replay('collectionName');
-      expect(fixtureHelper.load).to.have.been.calledWith('collectionName');
+    it('loads the fixture collection', (done) => {
+      truman.replay('collectionName').then(() => {
+        expect(fixtureHelper.load).to.have.been.calledWith('collectionName');
+        done();
+      }).catch(done);
     });
 
     it('creates a fake server with sinon', (done)=> {
       truman.replay('collectionName').then(()=> {
         expect(sinon.fakeServer.create).to.have.been.calledOnce();
         done();
-      });
+      }).catch(done);
     });
 
     it('attaches a response handler to the fake server', (done)=> {
       truman.replay('collectionName').then(()=> {
         expect(respondWithStub).to.have.been.calledOnce();
         done();
-      });
+      }).catch(done);
     });
 
     it('attaches a response filter to the fake server', (done)=> {
       truman.replay('collectionName').then(()=> {
         expect(XMLHttpRequest.filters[0]).to.be.a('function');
         done();
-      });
+      }).catch(done);
     });
 
     it('sets the state to replaying', (done) => {
@@ -216,7 +221,7 @@ describe('truman.js', ()=> {
           status: 'replaying'
         });
         done();
-      });
+      }).catch(done);
     });
 
   });
