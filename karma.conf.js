@@ -37,8 +37,7 @@ module.exports = function(config) {
     client: {
       captureConsole: true,
       timeout: 10000
-    },
-    browserNoActivityTimeout: 30000
+    }
   });
 
   if (process.env.USE_CLOUD) {
