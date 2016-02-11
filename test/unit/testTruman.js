@@ -127,9 +127,11 @@ describe('truman.js', ()=> {
       delete XMLHttpRequest.addFilter;
     });
 
-    it('loads the fixtures from the database', ()=> {
-      truman.record('collectionName');
-      expect(fixtureHelper.load).to.have.been.calledOnce();
+    it('loads the fixtures from the database', (done) => {
+      truman.record('collectionName').then(() => {
+        expect(fixtureHelper.load).to.have.been.calledOnce();
+        done();
+      }).catch(done);
     });
 
     it('starts using the fake XHR provided by sinon', (done)=> {
@@ -182,9 +184,11 @@ describe('truman.js', ()=> {
       delete XMLHttpRequest.addFilter;
     });
 
-    it('loads the fixture collection', ()=> {
-      truman.replay('collectionName');
-      expect(fixtureHelper.load).to.have.been.calledWith('collectionName');
+    it('loads the fixture collection', (done) => {
+      truman.replay('collectionName').then(() => {
+        expect(fixtureHelper.load).to.have.been.calledWith('collectionName');
+        done();
+      }).catch(done);
     });
 
     it('creates a fake server with sinon', (done)=> {
