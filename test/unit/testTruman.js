@@ -136,21 +136,21 @@ describe('truman.js', ()=> {
       truman.record('collectionName').then(()=> {
         expect(sinon.useFakeXMLHttpRequest).to.have.been.calledOnce();
         done();
-      });
+      }).catch(done);
     });
 
     it('adds a request filter for recording XHRs', (done)=> {
       truman.record('collectionName').then(()=> {
         expect(XMLHttpRequest.addFilter).to.have.been.calledOnce();
         done();
-      });
+      }).catch(done);
     });
 
     it('applies further monkeypatching to the XHR', (done)=> {
       truman.record('collectionName').then(()=> {
         expect(xhrHelper.monkeyPatchXHR).to.have.been.calledOnce();
         done();
-      });
+      }).catch(done);
     });
 
     it('sets the state to recording', (done)=> {
@@ -160,7 +160,7 @@ describe('truman.js', ()=> {
           status: 'recording'
         });
         done();
-      });
+      }).catch(done);
     });
 
   });
@@ -191,21 +191,21 @@ describe('truman.js', ()=> {
       truman.replay('collectionName').then(()=> {
         expect(sinon.fakeServer.create).to.have.been.calledOnce();
         done();
-      });
+      }).catch(done);
     });
 
     it('attaches a response handler to the fake server', (done)=> {
       truman.replay('collectionName').then(()=> {
         expect(respondWithStub).to.have.been.calledOnce();
         done();
-      });
+      }).catch(done);
     });
 
     it('attaches a response filter to the fake server', (done)=> {
       truman.replay('collectionName').then(()=> {
         expect(XMLHttpRequest.filters[0]).to.be.a('function');
         done();
-      });
+      }).catch(done);
     });
 
     it('sets the state to replaying', (done) => {
@@ -215,7 +215,7 @@ describe('truman.js', ()=> {
           status: 'replaying'
         });
         done();
-      });
+      }).catch(done);
     });
 
   });
