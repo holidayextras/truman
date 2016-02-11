@@ -1,9 +1,9 @@
 'use strict';
 
 var customLaunchers = {
-  win10chrome: { base: "SauceLabs", browserName: "chrome", platform: "Windows 10" },
-  win10ie11: { base: "SauceLabs", browserName: "internet explorer", platform: "Windows 10" },
-  win7ie9: { base: "SauceLabs", browserName: "internet explorer", platform: "Windows 7", version: "9.0" }
+  win10chrome: { base: 'SauceLabs', browserName: 'chrome', platform: 'Windows 10' },
+  win10ie11: { base: 'SauceLabs', browserName: 'internet explorer', platform: 'Windows 10' },
+  win7ie9: { base: 'SauceLabs', browserName: 'internet explorer', platform: 'Windows 7', version: '9.0' }
 };
 
 module.exports = function(config) {
@@ -47,7 +47,7 @@ module.exports = function(config) {
     config.connectOptions = {
       verbose: false,
       verboseDebugging: false
-    }
+    };
     config.browserNoActivityTimeout = 30000;
   }
 };
