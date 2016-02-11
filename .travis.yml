@@ -7,5 +7,6 @@ env:
     - TEST_STEP=build
     - TEST_STEP=lint
     - TEST_STEP=test
+    - USE_CLOUD=true TEST_STEP=karma
 notifications:
   email: false

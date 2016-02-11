@@ -14,6 +14,8 @@ var stateHelper = require('../../src/helpers/state.js');
 var xhrHelper = require('../../src/helpers/xhr.js');
 var loggingHelper = require('../../src/helpers/logging.js');
 
+var Promise = require('lie');
+
 describe('truman.js', ()=> {
   // Set up our stub restoration for this suite.
   var sandbox = sinon.sandbox.create();
