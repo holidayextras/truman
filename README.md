@@ -159,9 +159,11 @@ truman.currentStatus()
 ## Development
 
 ```
-npm install # Install dependencies
-npm start   # Run dev server with sandbox page and live reloading
-npm test    # Run the unit tests
+npm install   # Install dependencies
+npm start     # Run dev server with sandbox page and live reloading
+npm test      # Run the unit tests in node
+npm run karma # Run the unit tests in browsers
+npm run lint  # Check code style
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more information on making contributions.

@@ -8,8 +8,9 @@
     "release": "./scripts/release.sh",
     "build": "gulp build",
     "lint": "make-up test src",
-    "test": "mocha test --recursive",
-    "start": "gulp start"
+    "test": "mocha test/unit --recursive",
+    "start": "gulp start",
+    "karma": "karma start"
   },
   "keywords": [
     "fixturing",
@@ -51,6 +52,13 @@
     "http-rewrite-middleware": "^0.1.6",
     "imports-loader": "^0.6.5",
     "jsdom": "^7.2.2",
+    "karma": "^0.13.19",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-mocha": "^0.2.1",
+    "karma-sauce-launcher": "^0.3.0",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-spec-reporter": "0.0.24",
+    "karma-webpack": "^1.7.0",
     "make-up": "^7.1.0",
     "mocha": "^2.3.4",
     "run-sequence": "^1.1.5",
