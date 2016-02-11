@@ -1,4 +1,5 @@
-node_modules
+.DS_Store
 dist
-sandbox/truman.min.js
+node_modules
 npm-debug.log
+sandbox/truman.min.js
