@@ -10,6 +10,14 @@ const xhrHelper = require('../../../src/helpers/xhr.js');
 describe('FixtureHelper', ()=> {
 
   const sandbox = sinon.sandbox.create();
+  const fakeXhr = {
+    method: 'POST',
+    requestHeaders: { request: 'headers', foo: 'bar', bar: 'foo' },
+    url: 'https://foo.bar',
+    requestBody: { request: 'body', foo: 'bar', bar: 'foo' },
+    status: 'testStatus',
+    responseText: '[{"foo":"bar"}]'
+  };
   afterEach(() => sandbox.restore() );
 
   describe('initialize(options)', ()=> {
@@ -27,21 +35,13 @@ describe('FixtureHelper', ()=> {
 
   describe('addXhr(fixtures, xhr)', ()=> {
 
-    let fixtures, fakeXhr;
+    let fixtures;
 
     beforeEach(() => {
       sandbox.stub(xhrHelper, 'getQueryStringObject').returns('queryString');
       sandbox.stub(xhrHelper, 'getResponseHeadersObject').returns({ headerName: 'headerVal' });
 
       fixtures = [{ foo: 'bar' }];
-      fakeXhr = {
-        method: 'POST',
-        requestHeaders: { request: 'headers', foo: 'bar', bar: 'foo' },
-        url: 'https://foo.bar',
-        requestBody: { request: 'body', foo: 'bar', bar: 'foo' },
-        status: 'testStatus',
-        responseText: '[{"foo":"bar"}]'
-      };
     });
 
     it('generates the query string object from the XHR and config', ()=> {
@@ -207,15 +207,110 @@ describe('FixtureHelper', ()=> {
 
     });
 
-  });
+    describe('when the requestBody option is present', ()=> {
 
-  describe('domainFromUrl(url)', ()=> {
+      let fixtures, fixture;
 
+      describe('and is valid JSON', ()=> {
 
+        describe('with a valid JSON fixture requestBody', ()=> {
+
+          beforeEach(() => {
+            fixture = { request: { body: '{"foo":"bar","bar":"foo"}' } };
+            fixtures = [fixture];
+            fixtureHelper.initialize({ omittedDataParams: ['bar'] });
+          });
+
+          describe('when the body matches', ()=> {
+
+            it('returns an array containing the match', ()=> {
+              expect(fixtureHelper.find(fixtures, { requestBody: '{"foo":"bar","bar":"foo"}' })).to.eql([fixture]);
+            });
+
+          });
+
+          describe('when the body matches with configured parameters omitted', ()=> {
+
+            it('returns an array containing the match', ()=> {
+              expect(fixtureHelper.find(fixtures, { requestBody: '{"foo":"bar","bar":"baz"}' })).to.eql([fixture]);
+            });
+
+          });
+
+          describe('when the body does not match', ()=> {
+
+            it('returns an empty array', ()=> {
+              expect(fixtureHelper.find(fixtures, { requestBody: '{"foo":"bar","qux":"foo"}' })).to.eql([]);
+            });
+
+          });
+
+        });
+
+        describe('with an invalid JSON fixture requestBody', ()=> {
+
+          beforeEach(()=> {
+            fixture = { request: { url: 'https://foo.bar', body: '{{{}}}}}' } };
+            fixtures = [fixture];
+
+            sandbox.stub(console, 'error');
+          });
+
+          it('logs an error to the console', ()=> {
+            fixtureHelper.find(fixtures, { requestBody: '{}' });
+            expect(console.error).to.have.been.calledWith('Could not parse fixture request body for', fixture.request.url, fixture.request.body);
+          });
+
+          it('optimistically returns an array containing the fixture even though no match was made', ()=> {
+            expect(fixtureHelper.find(fixtures, { requestBody: '{}' })).to.eql([fixture]);
+          });
+
+        });
+
+      });
+
+      describe('and is invalid JSON', ()=> {
+
+        beforeEach(()=> {
+          fixture = { request: { body: '{"foo":"bar","bar":"foo"}' } };
+          fixtures = [fixture];
+          sandbox.stub(console, 'error');
+        });
+
+        it('logs an error to the console', ()=> {
+          fixtureHelper.find(fixtures, { requestBody: '{{{}}}}}' });
+          expect(console.error).to.have.been.calledWith('Could not parse option request body for', undefined, '{{{}}}}}');
+        });
+
+        it('optimistically returns an array containing the fixture even though no match was made', ()=> {
+          expect(fixtureHelper.find(fixtures, { requestBody: '{{{}}}}}' })).to.eql([fixture]);
+        });
+
+      });
+
+    });
 
   });
 
   describe('findForSinonXHR(fixtures, xhr)', ()=> {
+
+    let fixtures;
+
+    beforeEach(()=> {
+      fixtures = [];
+      sandbox.stub(xhrHelper, 'getQueryStringObject').returns('?foo=bar');
+      sandbox.stub(fixtureHelper, 'find');
+    });
+
+    it('attempts to find a fixture with options built from the provided XHR', ()=> {
+      fixtureHelper.findForSinonXHR(fixtures, fakeXhr);
+      expect(fixtureHelper.find).to.have.been.calledWith(fixtures, {
+        method: fakeXhr.method,
+        url: fakeXhr.url,
+        query: '?foo=bar',
+        requestBody: fakeXhr.requestBody
+      });
+    });
 
   });
 

@@ -80,7 +80,7 @@ let fixtureHelper = module.exports = {
           console.error('Could not parse fixture request body for', fixture.request.url, fixture.request.body);
         }
 
-
+        // We deliberately return true if either the fixture request body or option request body can't be parsed.
         if (parsedOptionRequestBody && parsedFixtureRequestBody && !_.isEqual(parsedOptionRequestBody, parsedFixtureRequestBody)) {
           return false;
         }
@@ -88,17 +88,6 @@ let fixtureHelper = module.exports = {
 
       return true;
     });
-  },
-
-  domainFromUrl(url) {
-    const protocol = url.split('/')[0];
-    const domain = url.split('/')[2];
-
-    if (!protocol || !domain) {
-      return null;
-    }
-
-    return `${protocol}//${domain}`;
   },
 
   findForSinonXHR(fixtures, xhr) {
