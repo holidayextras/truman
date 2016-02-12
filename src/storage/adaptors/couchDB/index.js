@@ -5,7 +5,6 @@ require('Base64');
 let _ = require('lodash');
 let PouchDB = require('pouchdb');
 
-const STORAGE_PREFIX = 'fixture-';
 const NO_NAME_ERR_MSG = 'Fixture collection name not provided.';
 
 let config = {};
@@ -41,9 +40,7 @@ let fixtureHelper = module.exports = {
       throw new Error(NO_NAME_ERR_MSG);
     }
 
-    const id = fixtureHelper._buildId(fixtureCollectionName);
-
-    return fixtureHelper._loadFromDatabase(localDB, id);
+    return fixtureHelper._loadFromDatabase(localDB, fixtureCollectionName);
   },
 
   store(fixtures, fixtureCollectionName) {
@@ -51,10 +48,8 @@ let fixtureHelper = module.exports = {
       throw new Error(NO_NAME_ERR_MSG);
     }
 
-    const id = fixtureHelper._buildId(fixtureCollectionName);
-    let fixtureRecord = { _id: id, fixtures: fixtures };
-
-    return fixtureHelper._storeToDatabase(localDB, id, fixtureRecord);
+    let fixtureRecord = { _id: fixtureCollectionName, fixtures: fixtures };
+    return fixtureHelper._storeToDatabase(localDB, fixtureCollectionName, fixtureRecord);
   },
 
   push(fixtureCollectionName, tag) {
@@ -64,10 +59,9 @@ let fixtureHelper = module.exports = {
 
     return fixtureHelper.load(fixtureCollectionName)
       .then((fixtures) => {
-        const id = fixtureHelper._buildId(fixtureCollectionName);
-        const fixtureRecord = { _id: id, fixtures: fixtures };
+        const fixtureRecord = { _id: fixtureCollectionName, fixtures: fixtures };
 
-        return fixtureHelper._storeToDatabase(remoteDB, id, fixtureRecord, tag)
+        return fixtureHelper._storeToDatabase(remoteDB, fixtureCollectionName, fixtureRecord, tag)
           .then(() => fixtures)
           .catch((err) => {
             console.error(err);
@@ -82,13 +76,12 @@ let fixtureHelper = module.exports = {
 
     return fixtureHelper.getLatestRevisionMapping(fixtureCollectionName, tags)
       .then((latestRevisionMapping) => {
-        const id = fixtureHelper._buildId(fixtureCollectionName);
 
         if (!latestRevisionMapping) {
-          return fixtureHelper._copyFromRemote(fixtureCollectionName, id);
+          return fixtureHelper._copyFromRemote(fixtureCollectionName, fixtureCollectionName);
         }
 
-        return fixtureHelper._copyFromRemote(fixtureCollectionName, id, latestRevisionMapping.revision);
+        return fixtureHelper._copyFromRemote(fixtureCollectionName, fixtureCollectionName, latestRevisionMapping.revision);
       });
   },
 
@@ -97,9 +90,7 @@ let fixtureHelper = module.exports = {
       throw new Error(NO_NAME_ERR_MSG);
     }
 
-    const id = fixtureHelper._buildId(fixtureCollectionName);
-
-    return localDB.get(id)
+    return localDB.get(fixtureCollectionName)
       .catch(fixtureHelper._swallow404)
       .then((existingFixtureRecord) => {
         if (existingFixtureRecord) {
@@ -132,10 +123,7 @@ let fixtureHelper = module.exports = {
     if (cachedRevisionMapping) {
       return Promise.resolve(cachedRevisionMapping);
     }
-
-    const id = fixtureHelper._buildId(fixtureCollectionName);
-
-    return remoteDB.get(id, { revs_info: true })
+    return remoteDB.get(fixtureCollectionName, { revs_info: true })
       .catch(fixtureHelper._swallow404)
       .then((response) => {
         if (!response) {
@@ -214,10 +202,6 @@ let fixtureHelper = module.exports = {
 
   _getNextRevisionNumber(revision) {
     return Number.parseInt(revision.match(/[^-]+/)[0], 10) + 1;
-  },
-
-  _buildId(fixtureCollectionName) {
-    return STORAGE_PREFIX + fixtureCollectionName;
   },
 
   // Swallow the error if the record doesn't exist yet...
