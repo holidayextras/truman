@@ -8,9 +8,10 @@
     "release": "./scripts/release.sh",
     "build": "gulp build",
     "lint": "make-up test src",
-    "test": "mocha test/unit --recursive",
+    "test": "npm-run-all test:mocha test:karma",
     "start": "gulp start",
-    "karma": "karma start"
+    "test:mocha": "mocha test/unit --recursive",
+    "test:karma": "karma start"
   },
   "keywords": [
     "fixturing",
@@ -61,6 +62,7 @@
     "karma-webpack": "^1.7.0",
     "make-up": "^7.1.0",
     "mocha": "^2.3.4",
+    "npm-run-all": "^1.5.1",
     "run-sequence": "^1.1.5",
     "sinon-chai": "git+https://github.com/sjmulder/sinon-chai.git#pr/sinon-2.0.0-pre",
     "webpack": "^1.12.11",

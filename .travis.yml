@@ -1,12 +1,15 @@
 language: node_js
 node_js:
-  - "4.1"
-script: "npm run $TEST_STEP"
+  - '4.1'
+cache:
+  directories:
+    - node_modules
+script: npm run $TEST_STEP
 env:
   matrix:
     - TEST_STEP=build
     - TEST_STEP=lint
-    - TEST_STEP=test
-    - USE_CLOUD=true TEST_STEP=karma
+    - TEST_STEP=test:mocha
+    - USE_CLOUD=true TEST_STEP=test:karma
 notifications:
   email: false

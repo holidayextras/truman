@@ -1,5 +1,8 @@
 [![Build Status](https://travis-ci.org/holidayextras/truman.svg?branch=master)](https://travis-ci.org/holidayextras/truman) [![Dependency Status](https://david-dm.org/holidayextras/truman.svg)](https://david-dm.org/)
 
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/michaelcarter.svg)](https://saucelabs.com/u/michaelcarter)
+
+
 # Truman ![Truman Logo](http://i.imgur.com/BkGRQbp.png)
 
 ### Simple test fixtures for single page apps
@@ -161,16 +164,11 @@ truman.currentStatus()
 ```
 npm install   # Install dependencies
 npm start     # Run dev server with sandbox page and live reloading
+npm test      # Run the tests
 npm run lint  # Check code style
 
-# Run the unit tests in node
-npm test
-
-# Run the unit tests in chrome
-npm run karma
-
 # Run the unit tests in multiple browsers, on Sauce Labs (replace xxx with your credentials)
-USE_CLOUD=t SAUCE_USERNAME=xxx SAUCE_PASSWORD=xxx npm run karma
+USE_CLOUD=t SAUCE_USERNAME=xxx SAUCE_PASSWORD=xxx npm run test:karma
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more information on making contributions.
