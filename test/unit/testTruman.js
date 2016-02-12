@@ -1,7 +1,7 @@
 'use strict';
 
-const sinon = require('../dependencies.js').sinon;
-const expect = require('../dependencies.js').expect;
+const sinon = require('../dependencies.js').sinon;
+const expect = require('../dependencies.js').expect;
 
 var truman = require('../../src/truman.js');
 var storage = require('../../src/storage');

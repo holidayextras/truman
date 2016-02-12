@@ -1,7 +1,7 @@
 'use strict';
 
-const sinon = require('../../dependencies.js').sinon;
-const expect = require('../../dependencies.js').expect;
+const sinon = require('../../dependencies.js').sinon;
+const expect = require('../../dependencies.js').expect;
 
 const _ = require('lodash');
 const fixtureHelper = require('../../../src/helpers/fixtures.js');
@@ -101,7 +101,7 @@ describe('FixtureHelper', ()=> {
         { baz: 'qux' },
         { bar: 'foo' }
       ];
-      fixtureHelper.removeFirst(fixtures, {bar: 'foo'});
+      fixtureHelper.removeFirst(fixtures, { bar: 'foo' });
       expect(fixtures).to.eql([
         { foo: 'bar' },
         { baz: 'qux' },
@@ -119,14 +119,14 @@ describe('FixtureHelper', ()=> {
 
       beforeEach(()=> {
         fixtures = [
-          { request: { method: 'GET' }}
+          { request: { method: 'GET' } }
         ];
       });
 
       describe('when the option matches a fixture', ()=> {
 
         it('returns an array containing the match', ()=> {
-          expect(fixtureHelper.find(fixtures, {method: 'GET'})).to.eql([{ request: { method: 'GET' }}]);
+          expect(fixtureHelper.find(fixtures, { method: 'GET' })).to.eql([{ request: { method: 'GET' } }]);
         });
 
       });
@@ -134,7 +134,7 @@ describe('FixtureHelper', ()=> {
       describe('when the option does not match a fixture', ()=> {
 
         it('returns an empty array', ()=> {
-          expect(fixtureHelper.find(fixtures, {method: 'PUT'})).to.eql([]);
+          expect(fixtureHelper.find(fixtures, { method: 'PUT' })).to.eql([]);
         });
 
       });
@@ -143,7 +143,7 @@ describe('FixtureHelper', ()=> {
 
     describe('when the url option is present', ()=> {
 
-      let fixtures, domainSynonyms;
+      let fixtures;
 
       beforeEach(()=> {
         fixtures = [
