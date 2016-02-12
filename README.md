@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/holidayextras/truman.svg?branch=master)](https://travis-ci.org/holidayextras/truman) [![Dependency Status](https://david-dm.org/holidayextras/truman.svg)](https://david-dm.org/)
-
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/michaelcarter.svg)](https://saucelabs.com/u/michaelcarter)
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/michaelcarter.svg)](https://saucelabs.com/u/michaelcarter) [![Build Status](https://travis-ci.org/holidayextras/truman.svg?branch=master)](https://travis-ci.org/holidayextras/truman) [![Dependency Status](https://david-dm.org/holidayextras/truman.svg)](https://david-dm.org/)
 
 
 # Truman ![Truman Logo](http://i.imgur.com/BkGRQbp.png)
