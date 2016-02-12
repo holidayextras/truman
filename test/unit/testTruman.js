@@ -1,12 +1,7 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
-var sinon = require('sinon');
-var sinonChai = require('sinon-chai');
-var dirtyChai = require('dirty-chai');
-chai.use(sinonChai);
-chai.use(dirtyChai);
+const sinon = require('../dependencies.js').sinon;
+const expect = require('../dependencies.js').expect;
 
 var truman = require('../../src/truman.js');
 var storage = require('../../src/storage');

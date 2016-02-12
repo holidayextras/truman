@@ -31,7 +31,7 @@ let truman = module.exports = {
 
     storage.initialize(options);
     fixtureHelper.initialize(options);
-    
+
     return truman._restoreState().then(() => {
       truman._initialized = true;
       loggingHelper.log(`%c${message}`, 'color: green');

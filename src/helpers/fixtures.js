@@ -4,15 +4,15 @@ let _ = require('lodash');
 let omitDeep = require('omit-deep');
 let xhrHelper = require('./xhr');
 
-var config = {
-  omittedQueryParams: [],
-  omittedDataParams: [],
-  domainSynonyms: []
-};
-
 let fixtureHelper = module.exports = {
+  _config: {
+    omittedQueryParams: [],
+    omittedDataParams: [],
+    domainSynonyms: {}
+  },
+
   initialize(options) {
-    _.assign(config, options);
+    _.assign(fixtureHelper._config, options);
   },
 
   addXhr(fixtures, xhr) {
@@ -21,7 +21,7 @@ let fixtureHelper = module.exports = {
         method: xhr.method,
         headers: xhr.requestHeaders,
         url: xhr.url,
-        query: xhrHelper.getQueryStringObject(xhr, config.omittedQueryParams),
+        query: xhrHelper.getQueryStringObject(xhr, fixtureHelper._config.omittedQueryParams),
         body: xhr.requestBody
       },
       response: {
@@ -50,10 +50,9 @@ let fixtureHelper = module.exports = {
         // so we exclude from the URL comparison and compare separately.
         const requestedUrl = options.url.split('?')[0];
         const fixtureUrl = fixture.request.url.split('?')[0];
-        const fixtureDomain = fixtureHelper.domainFromUrl(fixture.request.url);
-        const fixtureDomainSynonyms = config.domainSynonyms[fixtureDomain] || [];
+        const fixtureDomainSynonyms = fixtureHelper._config.domainSynonyms[fixtureUrl] || [];
 
-        const fixtureUrls = [fixtureUrl].concat(fixtureDomainSynonyms.map((domainSynonym) => fixtureUrl.replace(fixtureDomain, domainSynonym)));
+        const fixtureUrls = [fixtureUrl].concat(fixtureDomainSynonyms.map((domainSynonym) => fixtureUrl.replace(fixtureUrl, domainSynonym)));
 
         if (!_.includes(fixtureUrls, requestedUrl)) {
           return false;
@@ -68,7 +67,7 @@ let fixtureHelper = module.exports = {
         let parsedOptionRequestBody = null;
 
         try {
-          parsedOptionRequestBody = omitDeep(JSON.parse(options.requestBody), config.omittedDataParams);
+          parsedOptionRequestBody = omitDeep(JSON.parse(options.requestBody), fixtureHelper._config.omittedDataParams);
         } catch (e) {
           console.error('Could not parse option request body for', options.url, options.requestBody);
         }
@@ -76,7 +75,7 @@ let fixtureHelper = module.exports = {
         let parsedFixtureRequestBody = null;
 
         try {
-          parsedFixtureRequestBody = omitDeep(JSON.parse(fixture.request.body), config.omittedDataParams);
+          parsedFixtureRequestBody = omitDeep(JSON.parse(fixture.request.body), fixtureHelper._config.omittedDataParams);
         } catch (e) {
           console.error('Could not parse fixture request body for', fixture.request.url, fixture.request.body);
         }
@@ -103,7 +102,7 @@ let fixtureHelper = module.exports = {
   },
 
   findForSinonXHR(fixtures, xhr) {
-    const queryStringObject = xhrHelper.getQueryStringObject(xhr, config.omittedQueryParams);
+    const queryStringObject = xhrHelper.getQueryStringObject(xhr, fixtureHelper._config.omittedQueryParams);
     const findObject = {
       method: xhr.method,
       url: xhr.url,
