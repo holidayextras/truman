@@ -1,12 +1,15 @@
 language: node_js
 node_js:
-  - "4.1"
-script: "npm run $TEST_STEP"
+- '4.1'
+script: npm run $TEST_STEP
 env:
   matrix:
-    - TEST_STEP=build
-    - TEST_STEP=lint
-    - TEST_STEP=test
-    - USE_CLOUD=true TEST_STEP=karma
+  - TEST_STEP=build
+  - TEST_STEP=lint
+  - TEST_STEP=test
+  - USE_CLOUD=true TEST_STEP=karma
+  global:
+  - secure: WeiWfLdw4SWlO8JpxKMCD+pGMmnl7hhjT6XJb38u/XenyQa329dVk9i93RbYN7ZrOBwCyY1F+zCHs8YY9iQi16iMeFJJpmbC3j3isKZ5+C2SSVC1oUUUx6vd1cUB8BmDpFjmKP5iLHuiNbk5WaQr2sAX7QAjgXTNPvjl2sne/8PfHGY+jNXkbxFHqfBOpQnnDuLNF/gcC7ajrCd03ANw/oaUXMPDKe9qXGJmI0ewldnIaM14QXFmwjPRXkFAeCMyh082NAm9Y41PlGnJtnKwuByUZlTqAmjaH0QDZx7tSj998Cny/FXC+5dF4JbT38y821Z29QcwYaafUmT2MYLG6PZGo8/hkX5yeiHTR8BCFr7ORPAM1iuCbinrHPTtsjETJP2oeZgv5CIV8AIjeiC3yNF7o5XqG/89IWQ7NnzjaVioyL/seiKo219k5zqz8iqvQfShDcln4wXvAl611phYzIjmUkpL7xZCJekhFS94tH9Pcl2VDvmbx7RdFz1fTOsJ9SDzrQv2y4dSb7hCYooVr8fS0y5qBJvVv6/b29NqDcW/gM32DtgibvdLX7MjU24l2OKZ4lB5ryyin2HypCLU2DE886gWvuRKsb3IxusXI3bSMGbdQVzmsqPwHbuXRildUSeAJI9TydvGl/C3oNLGSTZYAvvPsNW20nfJtu3U8do=
+  - secure: FQGAb1kRsrToeAQ/+4A5Y7jPSaubXxTPD/qI9bU6e1Oa1xm9ZiwEs9IoetWR++40YMpP2YMT3xbN8WcXtIG+m+A0/HPPkE/vq+pjUDgK/In+dTJUrMRji4Z0JVsxdUXVNIyTGziik2kK7NSrg/KGZkM3qSlilymoMZBg9H1rcLt9hJB1UdwCapilg2i9Fujza52QuzAidZ7uFPu/QHlq0mTTN4GHX2UM1q6uXrMunpQEtI138EsXg/Pi06w5Si9z8mTVI61vh3y/dNrMsTdh/+Q1mYkfxvTIRIjg5xvbBfRvU4Xy50ijNnsDV9fCQs5xyQMxYBl7wZxl8feyL+zrPSszMG94CW1CgNkFlKJD91InmiR+QXRSsTqXbbYEdSKMGPDMmCislmsshqwKZ/w4fz5nJXda2NKmlpVxZZKCNYkszxFX8cu1LxMDX1EKujKBR0Qxn7RG+YkDZgtwN7vULsr5SJF/6xaMiNgI5zxiJMq4ym7u9+sdci2bzXJDuQfeS4c6krZ+enXvkvVLKzXeud1ITU9l37DjkqiCaUfMnOXY2lIjRXipJDbTzzHSUSBZVR49fzwsyc4mEK59ZP0HSdXq4cN/h+dia34GWXUGAx5KPQr6m8JZzLjmNOZPtgAtHNHkmthDUlTzgBMqoZ/WN+ZueN8DNEACbpIGe9O86rY=
 notifications:
   email: false
