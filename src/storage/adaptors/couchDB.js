@@ -9,7 +9,6 @@ const STORAGE_PREFIX = 'fixture-';
 const NO_NAME_ERR_MSG = 'Fixture collection name not provided.';
 
 let config = {};
-
 let localDB = null;
 let remoteDB = null;
 let cachedRevisionMapping = null;

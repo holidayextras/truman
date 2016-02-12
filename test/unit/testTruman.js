@@ -9,6 +9,7 @@ chai.use(sinonChai);
 chai.use(dirtyChai);
 
 var truman = require('../../src/truman.js');
+var storage = require('../../src/storage');
 var fixtureHelper = require('../../src/helpers/fixtures.js');
 var stateHelper = require('../../src/helpers/state.js');
 var xhrHelper = require('../../src/helpers/xhr.js');
@@ -29,6 +30,7 @@ describe('truman.js', ()=> {
 
     beforeEach(() => {
       sandbox.stub(fixtureHelper, 'initialize');
+      sandbox.stub(storage, 'initialize');
       sandbox.stub(truman, '_restoreState').returns(Promise.resolve());
       options = { foo: 'bar' };
       truman._initialized = false;
@@ -39,18 +41,24 @@ describe('truman.js', ()=> {
       expect(fixtureHelper.initialize).to.have.been.calledWith(options);
     });
 
+    it('initializes the storage with the provided options', ()=> {
+      truman.initialize(options);
+      expect(storage.initialize).to.have.been.calledWith(options);
+    });
+
     it('restores the truman state', ()=> {
       truman.initialize(options);
       expect(truman._restoreState).to.have.been.calledOnce();
     });
+
 
   });
 
   describe('pull()', ()=> {
 
     beforeEach(()=> {
-      sandbox.stub(fixtureHelper, 'getLatestRevisionMapping').returns(Promise.resolve({ tag: 'collectionTag' }));
-      sandbox.stub(fixtureHelper, 'pull').returns(Promise.resolve(['fixture']));
+      sandbox.stub(storage, 'getLatestRevisionMapping').returns(Promise.resolve({ tag: 'collectionTag' }));
+      sandbox.stub(storage, 'pull').returns(Promise.resolve(['fixture']));
       sandbox.stub(truman, 'currentStatus');
     });
 
@@ -68,12 +76,12 @@ describe('truman.js', ()=> {
 
     it('gets the latest revision mapping for the fixture and number of possible tags that may match that fixture.', ()=> {
       truman.pull('collectionName', ['foo', 'collectionTag', 'bar']);
-      expect(fixtureHelper.getLatestRevisionMapping).to.have.been.calledWith('collectionName', ['foo', 'collectionTag', 'bar']);
+      expect(storage.getLatestRevisionMapping).to.have.been.calledWith('collectionName', ['foo', 'collectionTag', 'bar']);
     });
 
     it('pulls the named fixture collection from the remote server', (done)=> {
       truman.pull('collectionName', 'collectionTag').then(() => {
-        expect(fixtureHelper.pull).to.have.been.calledWith('collectionName', 'collectionTag');
+        expect(storage.pull).to.have.been.calledWith('collectionName', 'collectionTag');
         done();
       });
     });
@@ -84,7 +92,7 @@ describe('truman.js', ()=> {
 
     beforeEach(()=> {
       sandbox.spy(truman._storageFifo, 'then');
-      sandbox.stub(fixtureHelper, 'push').returns(Promise.resolve(['fixture']));
+      sandbox.stub(storage, 'push').returns(Promise.resolve(['fixture']));
       sandbox.stub(truman, 'currentStatus');
     });
 
@@ -107,7 +115,7 @@ describe('truman.js', ()=> {
 
     it('pushes the remote fixture collection to the remote server', (done) => {
       truman.push('collectionName', 'collectionTag').then(() => {
-        expect(fixtureHelper.push).to.have.been.calledWith('collectionName', 'collectionTag');
+        expect(storage.push).to.have.been.calledWith('collectionName', 'collectionTag');
         done();
       });
     });
@@ -117,7 +125,7 @@ describe('truman.js', ()=> {
   describe('record()', ()=> {
 
     beforeEach(() => {
-      sandbox.stub(fixtureHelper, 'load').returns(Promise.resolve(['fixture']));
+      sandbox.stub(storage, 'load').returns(Promise.resolve(['fixture']));
       sandbox.stub(sinon, 'useFakeXMLHttpRequest');
       sandbox.stub(xhrHelper, 'monkeyPatchXHR');
       sandbox.stub(truman, 'currentStatus');
@@ -131,7 +139,7 @@ describe('truman.js', ()=> {
 
     it('loads the fixtures from the database', (done) => {
       truman.record('collectionName').then(() => {
-        expect(fixtureHelper.load).to.have.been.calledOnce();
+        expect(storage.load).to.have.been.calledOnce();
         done();
       }).catch(done);
     });
@@ -174,7 +182,7 @@ describe('truman.js', ()=> {
     var respondWithStub = null;
 
     beforeEach(() => {
-      sandbox.stub(fixtureHelper, 'load').returns(Promise.resolve(['fixture']));
+      sandbox.stub(storage, 'load').returns(Promise.resolve(['fixture']));
       respondWithStub = sinon.stub();
       sandbox.stub(sinon.fakeServer, 'create').returns({ respondWith: respondWithStub });
       sandbox.stub(truman, 'currentStatus');
@@ -188,7 +196,7 @@ describe('truman.js', ()=> {
 
     it('loads the fixture collection', (done) => {
       truman.replay('collectionName').then(() => {
-        expect(fixtureHelper.load).to.have.been.calledWith('collectionName');
+        expect(storage.load).to.have.been.calledWith('collectionName');
         done();
       }).catch(done);
     });
@@ -248,12 +256,12 @@ describe('truman.js', ()=> {
   describe('clear()', ()=> {
 
     beforeEach(()=> {
-      sandbox.stub(fixtureHelper, 'clear').returns(Promise.resolve());
+      sandbox.stub(storage, 'clear').returns(Promise.resolve());
     });
 
     it('clears the named fixture collection from the database', ()=> {
       truman.clear('collectionName');
-      expect(fixtureHelper.clear).to.have.been.calledWith('collectionName');
+      expect(storage.clear).to.have.been.calledWith('collectionName');
     });
 
   });
@@ -335,7 +343,7 @@ describe('truman.js', ()=> {
 
     beforeEach(()=> {
       sandbox.stub(fixtureHelper, 'addXhr');
-      sandbox.stub(fixtureHelper, 'store').returns(Promise.resolve(['fixture']));
+      sandbox.stub(storage, 'store').returns(Promise.resolve(['fixture']));
     });
 
     it('adds the given XHR to the database', () => {
@@ -345,7 +353,7 @@ describe('truman.js', ()=> {
 
     it('pushes the storage operation onto the storage fifo buffer', (done)=> {
       truman._storeXHR({ url: 'foo.bar' }, 'collectionName').then(() => {
-        expect(fixtureHelper.store).to.have.been.calledWith(['fixture'], 'collectionName');
+        expect(storage.store).to.have.been.calledWith(['fixture'], 'collectionName');
         done();
       });
     });
