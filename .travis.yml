@@ -9,7 +9,7 @@ env:
   matrix:
     - TEST_STEP=build
     - TEST_STEP=lint
-    - TEST_STEP=test
-    - USE_CLOUD=true TEST_STEP=karma
+    - TEST_STEP=test:mocha
+    - USE_CLOUD=true TEST_STEP=test:karma
 notifications:
   email: false
