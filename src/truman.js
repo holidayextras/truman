@@ -5,6 +5,7 @@ let fixtureHelper = require('./helpers/fixtures.js');
 let stateHelper = require('./helpers/state.js');
 let xhrHelper = require('./helpers/xhr.js');
 let loggingHelper = require('./helpers/logging.js');
+let storage = require('./storage');
 
 let Promise = require('lie');
 let _ = require('lodash');
@@ -28,7 +29,9 @@ let truman = module.exports = {
       return Promise.resolve(message);
     }
 
+    storage.initialize(options);
     fixtureHelper.initialize(options);
+
     return truman._restoreState().then(() => {
       truman._initialized = true;
       loggingHelper.log(`%c${message}`, 'color: green');
@@ -44,10 +47,10 @@ let truman = module.exports = {
       throw new Error('Cannot pull when in either a recording or replaying state, call `truman.restore()` first.');
     }
 
-    return fixtureHelper.getLatestRevisionMapping(fixtureCollectionName, tags)
+    return storage.getLatestRevisionMapping(fixtureCollectionName, tags)
       .then((latestRevisionMapping)=> {
         const latestTag = _.get(latestRevisionMapping, 'tag');
-        return fixtureHelper.pull(fixtureCollectionName, latestTag)
+        return storage.pull(fixtureCollectionName, latestTag)
           .then((fixtures) => {
             const message = `Loaded ${fixtures.length} fixtures from the database (tag: ${(latestTag || '[LATEST]')})`;
             if (callback) {
@@ -67,7 +70,7 @@ let truman = module.exports = {
     }
 
     return truman._storageFifo.then(() => {
-      return fixtureHelper.push(fixtureCollectionName, tag)
+      return storage.push(fixtureCollectionName, tag)
         .then((fixtures) => {
           const message = `Stored ${fixtures.length} fixtures to database (tag: ${(tag || '[AUTO]')})`;
           if (callback) {
@@ -86,7 +89,7 @@ let truman = module.exports = {
       truman.restore();
     }
 
-    return fixtureHelper.load(fixtureCollectionName)
+    return storage.load(fixtureCollectionName)
       .then((fixtures) => {
         // Want this available in memory.
         storageFixtures = fixtures;
@@ -122,7 +125,7 @@ let truman = module.exports = {
       truman.restore();
     }
 
-    return fixtureHelper.load(fixtureCollectionName)
+    return storage.load(fixtureCollectionName)
       .then((fixtures) => {
         // Load all of our fixtures into a fake server.
         let fakeServer = sinon.fakeServer.create();
@@ -137,7 +140,7 @@ let truman = module.exports = {
             // the correct fixture version.
             if (matchingFixtures.length > 1) {
               fixtureHelper.removeFirst(fixtures, fixture);
-              truman._storageFifo = truman._storageFifo.then(() => fixtureHelper.store(fixtures, fixtureCollectionName));
+              truman._storageFifo = truman._storageFifo.then(() => storage.store(fixtures, fixtureCollectionName));
             }
 
             xhr.respond(fixture.response.status, fixture.response.headers, fixture.response.body);
@@ -184,7 +187,7 @@ let truman = module.exports = {
   },
 
   clear(fixtureCollectionName, callback) {
-    return fixtureHelper.clear(fixtureCollectionName)
+    return storage.clear(fixtureCollectionName)
       .then(() => {
         loggingHelper.log('%cCLEARED%c: All local fixtures cleared.', 'color: green', 'color: black');
         if (callback) {
@@ -220,7 +223,7 @@ let truman = module.exports = {
     loggingHelper.log(`%cRECORDING%c: ${xhr.url}`, 'color: red', 'color: black');
     fixtureHelper.addXhr(storageFixtures, xhr);
     xhr.fixtured = true;
-    truman._storageFifo = truman._storageFifo.then(() => fixtureHelper.store(storageFixtures, fixtureCollectionName));
+    truman._storageFifo = truman._storageFifo.then(() => storage.store(storageFixtures, fixtureCollectionName));
     return truman._storageFifo;
   },
 
