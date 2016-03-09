@@ -3,64 +3,45 @@
 require('Base64');
 
 let _ = require('lodash');
-let PouchDB = require('pouchdb');
+let PouchDB = window.PouchDB = require('pouchdb');
 
-const NO_NAME_ERR_MSG = 'Fixture collection name not provided.';
+const REQUEST_TIMEOUT = 120000;
 
-let config = {};
 let localDB = null;
 let remoteDB = null;
 let cachedRevisionMapping = null;
 
 let fixtureHelper = module.exports = {
   initialize(options) {
-    _.assign(config, options);
-    window.PouchDB = PouchDB; // Necessary for the PouchDB Chrome inspector
     localDB = new PouchDB('truman');
-
-    if (config.database) {
-      let remoteConfig = {
-        ajax: {
-          timeout: 120000
+    remoteDB = new PouchDB(options.url, {
+      ajax: {
+        timeout: REQUEST_TIMEOUT,
+        headers: {
+          Authorization: 'Basic ' + window.btoa(options.user + ':' + options.password)
         }
-      };
-
-      if (config.database.user && config.database.password) {
-        remoteConfig.ajax.headers = {
-          Authorization: 'Basic ' + window.btoa(config.database.user + ':' + config.database.password)
-        };
       }
-
-      remoteDB = new PouchDB(config.database.url, remoteConfig);
-    }
+    });
   },
 
   load(fixtureCollectionName) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
-
     return fixtureHelper._loadFromDatabase(localDB, fixtureCollectionName);
   },
 
   store(fixtures, fixtureCollectionName) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
-
-    let fixtureRecord = { _id: fixtureCollectionName, fixtures: fixtures };
-    return fixtureHelper._storeToDatabase(localDB, fixtureCollectionName, fixtureRecord);
+    return fixtureHelper._storeToDatabase(localDB, fixtureCollectionName, {
+      _id: fixtureCollectionName,
+      fixtures
+    });
   },
 
   push(fixtureCollectionName, tag) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
-
     return fixtureHelper.load(fixtureCollectionName)
       .then((fixtures) => {
-        const fixtureRecord = { _id: fixtureCollectionName, fixtures: fixtures };
-
+        const fixtureRecord = {
+          _id: fixtureCollectionName,
+          fixtures
+        };
         return fixtureHelper._storeToDatabase(remoteDB, fixtureCollectionName, fixtureRecord, tag)
           .then(() => fixtures)
           .catch((err) => {
@@ -70,26 +51,13 @@ let fixtureHelper = module.exports = {
   },
 
   pull(fixtureCollectionName, tags) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
-
     return fixtureHelper.getLatestRevisionMapping(fixtureCollectionName, tags)
       .then((latestRevisionMapping) => {
-
-        if (!latestRevisionMapping) {
-          return fixtureHelper._copyFromRemote(fixtureCollectionName, fixtureCollectionName);
-        }
-
-        return fixtureHelper._copyFromRemote(fixtureCollectionName, fixtureCollectionName, latestRevisionMapping.revision);
+        return fixtureHelper._copyFromRemote(fixtureCollectionName, fixtureCollectionName, _.result(latestRevisionMapping, 'revision'))
       });
   },
 
   clear(fixtureCollectionName) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
-
     return localDB.get(fixtureCollectionName)
       .catch(fixtureHelper._swallow404)
       .then((existingFixtureRecord) => {
@@ -101,13 +69,7 @@ let fixtureHelper = module.exports = {
   },
 
   getLatestRevisionMapping(fixtureCollectionName, tags) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
-
-    if (!_.isArray(tags)) {
-      tags = _.compact([tags]);
-    }
+    tags = _.compact([].concat(tags)); // Forces an array and removes empty values
 
     return fixtureHelper._getRevisionMapping(fixtureCollectionName)
       .then((fixtureRevisionMappings) => {
@@ -116,10 +78,6 @@ let fixtureHelper = module.exports = {
   },
 
   _getRevisionMapping(fixtureCollectionName) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
-
     if (cachedRevisionMapping) {
       return Promise.resolve(cachedRevisionMapping);
     }

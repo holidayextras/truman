@@ -9,8 +9,9 @@ let storage = require('./storage');
 
 let Promise = require('lie');
 let _ = require('lodash');
-var storageFixtures = [];
+let storageFixtures = [];
 
+const NO_NAME_ERR_MSG = 'Fixture collection name not provided.';
 const RECORDING_STATE = 'recording';
 const REPLAYING_STATE = 'replaying';
 
@@ -43,6 +44,9 @@ let truman = module.exports = {
   },
 
   pull(fixtureCollectionName, tags, callback) {
+    if (!fixtureCollectionName) {
+      throw new Error(NO_NAME_ERR_MSG);
+    }
     if (truman.currentStatus()) {
       throw new Error('Cannot pull when in either a recording or replaying state, call `truman.restore()` first.');
     }
@@ -65,6 +69,9 @@ let truman = module.exports = {
   },
 
   push(fixtureCollectionName, tag, callback) {
+    if (!fixtureCollectionName) {
+      throw new Error(NO_NAME_ERR_MSG);
+    }
     if (truman.currentStatus()) {
       throw new Error('Cannot push when in either a recording or replaying state, call `truman.restore()` first.');
     }
@@ -85,6 +92,9 @@ let truman = module.exports = {
   },
 
   record(fixtureCollectionName, callback) {
+    if (!fixtureCollectionName) {
+      throw new Error(NO_NAME_ERR_MSG);
+    }
     if (truman.currentStatus() === REPLAYING_STATE) {
       truman.restore();
     }
@@ -121,6 +131,9 @@ let truman = module.exports = {
   },
 
   replay(fixtureCollectionName, callback) {
+    if (!fixtureCollectionName) {
+      throw new Error(NO_NAME_ERR_MSG);
+    }
     if (truman.currentStatus() === RECORDING_STATE) {
       truman.restore();
     }
@@ -187,6 +200,10 @@ let truman = module.exports = {
   },
 
   clear(fixtureCollectionName, callback) {
+    if (!fixtureCollectionName) {
+      throw new Error(NO_NAME_ERR_MSG);
+    }
+
     return storage.clear(fixtureCollectionName)
       .then(() => {
         loggingHelper.log('%cCLEARED%c: All local fixtures cleared.', 'color: green', 'color: black');
