@@ -32,7 +32,7 @@
     "Base64": "~0.3.0",
     "lie": "~3.0.1",
     "lodash": "~4.3.0",
-    "omit-deep": "~0.1.2",
+    "omit-deep": "splodingsocks/omit-deep",
     "pouchdb": "~5.1.0",
     "sinon": "git+https://github.com/sinonjs/sinon.git"
   },
