@@ -247,6 +247,24 @@ describe('FixtureHelper', ()=> {
 
         });
 
+        describe('with a valid JSON fixture requestBody containing an object nested in an array', ()=> {
+
+          beforeEach(() => {
+            fixture = { request: { body: '{"foo":"bar","bar":"foo","baz":{"bar":"foo", "bbb":[{"bar":"foo"}]}}' } };
+            fixtures = [fixture];
+            fixtureHelper.initialize({ omittedDataParams: ['bar'] });
+          });
+
+          describe('when the body matches with configured parameters omitted', ()=> {
+
+            it('returns an array containing the match', ()=> {
+              expect(fixtureHelper.find(fixtures, { requestBody: '{"foo":"bar","baz":{"bar":"kjndfkjbdf","bbb":[{"bar":"somethingelse"}]}}' })).to.eql([fixture]);
+            });
+
+          });
+
+        });
+
         describe('with an invalid JSON fixture requestBody', ()=> {
 
           beforeEach(()=> {
