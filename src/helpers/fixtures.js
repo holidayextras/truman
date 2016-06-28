@@ -50,10 +50,10 @@ let fixtureHelper = module.exports = {
         // so we exclude from the URL comparison and compare separately.
         const requestedUrl = options.url.split('?')[0];
         const fixtureUrl = fixture.request.url.split('?')[0];
-        const fixtureDomainSynonyms = fixtureHelper._config.domainSynonyms[fixtureUrl] || [];
+        const fixtureDomain = fixtureHelper.domainFromUrl(fixtureUrl);
+        const fixtureDomainSynonyms = fixtureHelper._config.domainSynonyms[fixtureDomain] || [];
 
-        const fixtureUrls = [fixtureUrl].concat(fixtureDomainSynonyms.map((domainSynonym) => fixtureUrl.replace(fixtureUrl, domainSynonym)));
-
+        const fixtureUrls = [fixtureUrl].concat(fixtureDomainSynonyms.map((domainSynonym) => fixtureUrl.replace(fixtureDomain, domainSynonym)));
         if (!_.includes(fixtureUrls, requestedUrl)) {
           return false;
         }
@@ -88,6 +88,17 @@ let fixtureHelper = module.exports = {
 
       return true;
     });
+  },
+
+  domainFromUrl(url) {
+    const protocol = url.split('/')[0];
+    const domain = url.split('/')[2];
+
+    if (!protocol || !domain) {
+      return null;
+    }
+
+    return `${protocol}//${domain}`;
   },
 
   findForSinonXHR(fixtures, xhr) {
