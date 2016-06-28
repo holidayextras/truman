@@ -147,7 +147,7 @@ describe('FixtureHelper', ()=> {
 
       beforeEach(()=> {
         fixtures = [
-          { request: { url: 'https://foo.com?bar=baz' } }
+          { request: { url: 'https://foo.com/bar/baz?bar=baz' } }
         ];
 
         fixtureHelper.initialize({ domainSynonyms: { 'https://foo.com': ['https://qux.com'] } });
@@ -156,15 +156,15 @@ describe('FixtureHelper', ()=> {
       describe('when the option matches a fixture', ()=> {
 
         it('returns an array containing the match', ()=> {
-          expect(fixtureHelper.find(fixtures, { url: 'https://foo.com?bar=baz' })).to.eql([{ request: { url: 'https://foo.com?bar=baz' } }]);
+          expect(fixtureHelper.find(fixtures, { url: 'https://foo.com/bar/baz?bar=baz' })).to.eql([{ request: { url: 'https://foo.com/bar/baz?bar=baz' } }]);
         });
 
       });
 
-      describe('when the option matches a domain synonym, which in turn matches a fixture', ()=> {
+      describe('when the option matches a domain synonym, which in turn matches a fixture with a path and some params', ()=> {
 
         it('returns an array containing the match', ()=> {
-          expect(fixtureHelper.find(fixtures, { url: 'https://qux.com?bar=baz' })).to.eql([{ request: { url: 'https://foo.com?bar=baz' } }]);
+          expect(fixtureHelper.find(fixtures, { url: 'https://qux.com/bar/baz?bar=baz' })).to.eql([{ request: { url: 'https://foo.com/bar/baz?bar=baz' } }]);
         });
 
       });
