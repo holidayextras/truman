@@ -6,15 +6,15 @@ let stateHelper = module.exports = {
 
   updateState(newState) {
     if (!newState) {
-      return localStorage.removeItem('autoFixture');
+      return localStorage.removeItem('truman');
     }
 
     let state = stateHelper.loadState();
-    localStorage.setItem('autoFixture', JSON.stringify(_.assign(state, newState)));
+    localStorage.setItem('truman', JSON.stringify(_.assign(state, newState)));
   },
 
   loadState() {
-    return JSON.parse(localStorage.getItem('autoFixture') || '{}');
+    return JSON.parse(localStorage.getItem('truman') || '{}');
   }
 
 };

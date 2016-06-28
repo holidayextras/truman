@@ -30,8 +30,8 @@ let truman = module.exports = {
       return Promise.resolve(message);
     }
 
-    storage.initialize(options);
-    fixtureHelper.initialize(options);
+    storage.initialize(options.storage);
+    fixtureHelper.initialize(options.fixtures);
 
     return truman._restoreState().then(() => {
       truman._initialized = true;

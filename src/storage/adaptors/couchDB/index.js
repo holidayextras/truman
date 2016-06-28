@@ -2,9 +2,9 @@
 
 require('Base64');
 
-let _ = require('lodash');
-let PouchDB = window.PouchDB = require('pouchdb');
-
+const _ = require('lodash');
+const PouchDB = window.PouchDB = require('pouchdb');
+const DB_NAME = 'truman';
 const REQUEST_TIMEOUT = 120000;
 
 let localDB = null;
@@ -13,36 +13,43 @@ let cachedRevisionMapping = null;
 
 let fixtureHelper = module.exports = {
   initialize(options) {
-    localDB = new PouchDB('truman');
-    remoteDB = new PouchDB(options.url, {
+    localDB = new PouchDB(DB_NAME);
+
+    const remoteConfig = {
       ajax: {
-        timeout: REQUEST_TIMEOUT,
-        headers: {
-          Authorization: 'Basic ' + window.btoa(options.user + ':' + options.password)
-        }
+        timeout: REQUEST_TIMEOUT
       }
-    });
+    };
+
+    if (options.user && options.password) {
+      remoteCOnfig.ajax.headers = {
+        Authorization: 'Basic ' + window.btoa(options.user + ':' + options.password)
+      };
+    }
+
+    remoteDB = new PouchDB(options.url, remoteConfig);
   },
 
-  load(fixtureCollectionName) {
-    return fixtureHelper._loadFromDatabase(localDB, fixtureCollectionName);
+  load(id) {
+    return fixtureHelper._loadFromDatabase(localDB, id);
   },
 
-  store(fixtures, fixtureCollectionName) {
-    return fixtureHelper._storeToDatabase(localDB, fixtureCollectionName, {
-      _id: fixtureCollectionName,
+  store(fixtures, id) {
+    return fixtureHelper._storeToDatabase(localDB, id, {
+      _id: id,
       fixtures
     });
   },
 
-  push(fixtureCollectionName, tag) {
-    return fixtureHelper.load(fixtureCollectionName)
+  push(id, tag) {
+    return fixtureHelper.load(id)
       .then((fixtures) => {
         const fixtureRecord = {
-          _id: fixtureCollectionName,
+          _id: id,
           fixtures
         };
-        return fixtureHelper._storeToDatabase(remoteDB, fixtureCollectionName, fixtureRecord, tag)
+
+        return fixtureHelper._storeToDatabase(remoteDB, id, fixtureRecord, tag)
           .then(() => fixtures)
           .catch((err) => {
             console.error(err);
@@ -50,15 +57,16 @@ let fixtureHelper = module.exports = {
       });
   },
 
-  pull(fixtureCollectionName, tags) {
-    return fixtureHelper.getLatestRevisionMapping(fixtureCollectionName, tags)
+  pull(id, tags) {
+    return fixtureHelper.getLatestRevisionMapping(id, tags)
       .then((latestRevisionMapping) => {
-        return fixtureHelper._copyFromRemote(fixtureCollectionName, fixtureCollectionName, _.result(latestRevisionMapping, 'revision'))
+        const latestRevision = _.result(latestRevisionMapping, 'revision');
+        return fixtureHelper._copyFromRemote(id, latestRevision)
       });
   },
 
-  clear(fixtureCollectionName) {
-    return localDB.get(fixtureCollectionName)
+  clear(id) {
+    return localDB.get(id)
       .catch(fixtureHelper._swallow404)
       .then((existingFixtureRecord) => {
         if (existingFixtureRecord) {
@@ -68,20 +76,20 @@ let fixtureHelper = module.exports = {
       });
   },
 
-  getLatestRevisionMapping(fixtureCollectionName, tags) {
+  getLatestRevisionMapping(id, tags) {
     tags = _.compact([].concat(tags)); // Forces an array and removes empty values
 
-    return fixtureHelper._getRevisionMapping(fixtureCollectionName)
+    return fixtureHelper._getRevisionMapping(id)
       .then((fixtureRevisionMappings) => {
         return fixtureRevisionMappings.find((fixtureRevisionMapping) => _.includes(tags, fixtureRevisionMapping.tag));
       });
   },
 
-  _getRevisionMapping(fixtureCollectionName) {
+  _getRevisionMapping(id) {
     if (cachedRevisionMapping) {
       return Promise.resolve(cachedRevisionMapping);
     }
-    return remoteDB.get(fixtureCollectionName, { revs_info: true })
+    return remoteDB.get(id, { revs_info: true })
       .catch(fixtureHelper._swallow404)
       .then((response) => {
         if (!response) {
@@ -150,10 +158,10 @@ let fixtureHelper = module.exports = {
       });
   },
 
-  _copyFromRemote(fixtureCollectionName, id, revision) {
+  _copyFromRemote(id, revision) {
     return fixtureHelper._loadFromDatabase(remoteDB, id, revision)
       .then((fixtures) => {
-        return fixtureHelper.store(fixtures, fixtureCollectionName)
+        return fixtureHelper.store(fixtures, id)
           .then(() => fixtures);
       });
   },
