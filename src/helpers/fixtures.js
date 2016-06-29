@@ -1,8 +1,9 @@
 'use strict';
 
-let _ = require('lodash');
-let omitDeep = require('omit-deep');
-let xhrHelper = require('./xhr');
+const _ = require('lodash');
+const omitDeep = require('omit-deep');
+const xhrHelper = require('./xhr');
+const levenshtein = require('fast-levenshtein');
 
 let fixtureHelper = module.exports = {
   _config: {
@@ -87,6 +88,26 @@ let fixtureHelper = module.exports = {
       }
 
       return true;
+    });
+  },
+
+  sortByClosestMatchingURL(fixtures, xhr) {
+    // Sort sorts in place, which we don't want to do, so we clone the array.
+    fixtures = JSON.parse(JSON.stringify(fixtures));
+
+    return fixtures.sort(function(a, b) {
+      const aDistance = levenshtein.get(a.request.url, xhr.url);
+      const bDistance = levenshtein.get(b.request.url, xhr.url);
+
+      if (aDistance < bDistance) {
+        return -1;
+      }
+
+      if (aDistance > bDistance) {
+        return 1;
+      }
+
+      return 0;
     });
   },
 

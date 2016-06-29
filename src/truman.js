@@ -148,7 +148,13 @@ let truman = module.exports = {
             loggingHelper.log(xhr, fixture);
           } else {
             loggingHelper.log(`%cNOT FOUND%c: ${xhr.method} ${xhr.url}`, 'color: red', 'color: black');
-            loggingHelper.log(xhr, fixtures);
+            loggingHelper.log('Looking for XHR:', xhr);
+
+            if (xhr.method === 'GET') {
+              loggingHelper.log('Fixtures (closest URL first):', fixtureHelper.sortByClosestMatchingURL(fixtures, xhr));
+            } else {
+              loggingHelper.log('Fixtures:', fixtures);
+            }
           }
         });
 
