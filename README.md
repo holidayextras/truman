@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/holidayextras/truman.svg)](https://travis-ci.org/holidayextras/truman) [![Dependency Status](https://david-dm.org/holidayextras/truman.svg)](https://david-dm.org/holidayextras/truman)
+[![Build Status](https://travis-ci.org/holidayextras/truman.png)](https://travis-ci.org/holidayextras/truman) [![Dependency Status](https://david-dm.org/holidayextras/truman.png)](https://david-dm.org/holidayextras/truman)
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/michaelcarter.svg)](https://saucelabs.com/u/michaelcarter)
 
