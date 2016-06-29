@@ -35,7 +35,7 @@ describe('FixtureHelper', ()=> {
 
   describe('sortByClosestMatchingURL', () => {
 
-    let fixtures, xhr;
+    let fixtures;
 
     beforeEach(() => {
       fixtures = [
