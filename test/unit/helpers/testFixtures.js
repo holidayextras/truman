@@ -33,6 +33,40 @@ describe('FixtureHelper', ()=> {
 
   });
 
+  describe('sortByClosestMatchingURL', () => {
+
+    let fixtures;
+
+    beforeEach(() => {
+      fixtures = [
+        { request: { url: 'foo' } },
+        { request: { url: 'bar' } },
+        { request: { url: 'baz' } }
+      ];
+    });
+
+    it('sorts a set of fixtures according to the request URL', () => {
+      expect(fixtureHelper.sortByClosestMatchingURL(fixtures, { url: 'baz' })).to.eql([
+        { request: { url: 'baz' } },
+        { request: { url: 'bar' } },
+        { request: { url: 'foo' } }
+      ]);
+
+      expect(fixtureHelper.sortByClosestMatchingURL(fixtures, { url: 'bar' })).to.eql([
+        { request: { url: 'bar' } },
+        { request: { url: 'baz' } },
+        { request: { url: 'foo' } }
+      ]);
+
+      expect(fixtureHelper.sortByClosestMatchingURL(fixtures, { url: 'foo' })).to.eql([
+        { request: { url: 'foo' } },
+        { request: { url: 'bar' } },
+        { request: { url: 'baz' } }
+      ]);
+    });
+
+  });
+
   describe('addXhr(fixtures, xhr)', ()=> {
 
     let fixtures;

@@ -64,6 +64,7 @@ gulp.task('connect', function() {
 
   return connect.server({
     root: 'sandbox',
+    port: 8082,
     livereload: true,
     middleware: function() {
       return [middleware];
@@ -74,7 +75,7 @@ gulp.task('connect', function() {
 gulp.task('open', function() {
   return gulp.src('./sandbox/index.html')
     .pipe(open({
-      uri: 'http://localhost:8080',
+      uri: 'http://localhost:8082',
       app: 'google chrome'
     }));
 });
