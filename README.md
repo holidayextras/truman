@@ -79,6 +79,10 @@ truman.initialize([config])
 
 `initialize` returns a promise that resolves once initialization is complete.
 
+#### If using in Safari
+
+The default amount of storage Safari supplies to PouchDB [is quite low](https://pouchdb.com/errors.html#not_enough_space), and if exceeded a modal dialog will be opened that requires accepting. Truman will request 50 MB when it is initialized, with the aim of ensuring the dialog is opened at a predictable time (from the point of view of selenium you interact with it like an alert).
+
 ### record(fixtureCollectionName, [callback])
 ```javascript
 truman.record(fixtureCollectionName, [callback])
