@@ -60,7 +60,13 @@ let fixtureHelper = module.exports = {
         }
       }
 
-      if (options.query && !_.isEqual(options.query, fixture.request.query)) {
+      const filteredFixturedQuery = xhrHelper.getQueryStringObject({
+        url: 'http://localhost/?' + Object.keys(fixture.request.query || {}).map(function(key) {
+          return key + '=' + fixture.request.query[key];
+        }).join('&')
+      }, fixtureHelper._config.omittedQueryParams);
+
+      if (options.query && !_.isEqual(options.query, filteredFixturedQuery)) {
         return false;
       }
 
