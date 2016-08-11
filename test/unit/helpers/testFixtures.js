@@ -219,22 +219,24 @@ describe('FixtureHelper', ()=> {
 
       describe('and there are no omittedQueryParams', () => {
         beforeEach(() => {
-          fixtures = [
-            { request: { query: {
-              foo: 'bar'
-            }}}
-          ];
+          fixtures = [{
+            request: {
+              query: {
+                foo: 'bar'
+              }
+            }
+          }];
         });
 
         describe('when the option matches a fixture', () => {
           it('returns an array containing the match', () => {
-            expect(fixtureHelper.find(fixtures, { query: { foo: 'bar' }})).to.eql([{ request: { query: { foo: 'bar' } } }]);
+            expect(fixtureHelper.find(fixtures, { query: { foo: 'bar' } })).to.eql([{ request: { query: { foo: 'bar' } } }]);
           });
         });
 
         describe('when the option does not match a fixture', () => {
           it('returns an empty array', () => {
-            expect(fixtureHelper.find(fixtures, { query: { baz: 'qux' }})).to.eql([]);
+            expect(fixtureHelper.find(fixtures, { query: { baz: 'qux' } })).to.eql([]);
           });
         });
       });
@@ -250,13 +252,15 @@ describe('FixtureHelper', ()=> {
         });
 
         it('excludes them from the fixture for the purposes of matching', () => {
-          fixtures = [
-            { request: { query: {
-              foo: 'bar',
-              bar: 'baz'
-            }}}
-          ];
-          expect(fixtureHelper.find(fixtures, { query: { foo: 'bar' }})).to.eql([{ request: { query: { foo: 'bar', bar: 'baz' } }}]);
+          fixtures = [{
+            request: {
+              query: {
+                foo: 'bar',
+                bar: 'baz'
+              }
+            }
+          }];
+          expect(fixtureHelper.find(fixtures, { query: { foo: 'bar' } })).to.eql([{ request: { query: { foo: 'bar', bar: 'baz' } } }]);
         });
       });
     });
