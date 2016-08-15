@@ -61,7 +61,7 @@ let fixtureHelper = module.exports = {
       }
 
       const filteredFixturedQuery = xhrHelper.getQueryStringObject({
-        url: 'http://localhost/?' + Object.keys(fixture.request.query || {}).map(function(key) {
+        url: 'http://ignore.the.domain.only.querystring.matters/?' + Object.keys(fixture.request.query || {}).map(function(key) {
           return key + '=' + fixture.request.query[key];
         }).join('&')
       }, fixtureHelper._config.omittedQueryParams);
