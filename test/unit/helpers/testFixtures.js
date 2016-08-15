@@ -213,32 +213,56 @@ describe('FixtureHelper', ()=> {
 
     });
 
-    describe('when the query option is present', ()=> {
+    describe('when the query option is present', () => {
 
       let fixtures;
 
-      beforeEach(()=> {
-        fixtures = [
-          { request: { query: '?foo=bar' } }
-        ];
-      });
-
-      describe('when the option matches a fixture', ()=> {
-
-        it('returns an array containing the match', ()=> {
-          expect(fixtureHelper.find(fixtures, { query: '?foo=bar' })).to.eql([{ request: { query: '?foo=bar' } }]);
+      describe('and there are no omittedQueryParams', () => {
+        beforeEach(() => {
+          fixtures = [{
+            request: {
+              query: {
+                foo: 'bar'
+              }
+            }
+          }];
         });
 
-      });
-
-      describe('when the option does not match a fixture', ()=> {
-
-        it('returns an empty array', ()=> {
-          expect(fixtureHelper.find(fixtures, { query: '?baz=qux' })).to.eql([]);
+        describe('when the option matches a fixture', () => {
+          it('returns an array containing the match', () => {
+            expect(fixtureHelper.find(fixtures, { query: { foo: 'bar' } })).to.eql([{ request: { query: { foo: 'bar' } } }]);
+          });
         });
 
+        describe('when the option does not match a fixture', () => {
+          it('returns an empty array', () => {
+            expect(fixtureHelper.find(fixtures, { query: { baz: 'qux' } })).to.eql([]);
+          });
+        });
       });
 
+      // The input to this function already has the omitted params removed,
+      // and when the fixtures are recorded for the first time the omitted
+      // params are removed. This is effectively covering that if you were to
+      // omit a param and already had fixtures recorded containing the param,
+      // that they are still matched on a replay.
+      describe('and there are omittedQueryParams', () => {
+        beforeEach(() => {
+          fixtureHelper.initialize({ omittedQueryParams: ['bar'] });
+        });
+
+        it('excludes them from the fixture for the purposes of matching', () => {
+          fixtures = [{
+            request: {
+              query: {
+                foo: 'bar',
+                bar: 'baz'
+              }
+            }
+          }];
+          expect(fixtureHelper.find(fixtures, { query: { foo: 'bar' } })).to.eql([{ request: { query: { foo: 'bar', bar: 'baz' } } }]);
+        });
+      });
     });
 
     describe('when the requestBody option is present', ()=> {
