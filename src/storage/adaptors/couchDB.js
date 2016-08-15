@@ -17,7 +17,9 @@ let fixtureHelper = module.exports = {
   initialize(options) {
     _.assign(config, options);
     window.PouchDB = PouchDB; // Necessary for the PouchDB Chrome inspector
-    localDB = new PouchDB('truman');
+    localDB = new PouchDB('truman', {
+      size: 50
+    });
 
     if (config.database) {
       let remoteConfig = {
