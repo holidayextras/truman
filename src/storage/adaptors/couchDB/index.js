@@ -2,70 +2,52 @@
 
 require('Base64');
 
-let _ = require('lodash');
-let PouchDB = require('pouchdb');
+const _ = require('lodash');
+const PouchDB = window.PouchDB = require('pouchdb');
+const DB_NAME = 'truman';
+const REQUEST_TIMEOUT = 120000;
 
-const STORAGE_PREFIX = 'fixture-';
-const NO_NAME_ERR_MSG = 'Fixture collection name not provided.';
-
-let config = {};
 let localDB = null;
 let remoteDB = null;
 let cachedRevisionMapping = null;
 
 let fixtureHelper = module.exports = {
   initialize(options) {
-    _.assign(config, options);
-    window.PouchDB = PouchDB; // Necessary for the PouchDB Chrome inspector
-    localDB = new PouchDB('truman');
+    localDB = new PouchDB(DB_NAME);
 
-    if (config.database) {
-      let remoteConfig = {
-        ajax: {
-          timeout: 120000
-        }
-      };
-
-      if (config.database.user && config.database.password) {
-        remoteConfig.ajax.headers = {
-          Authorization: 'Basic ' + window.btoa(config.database.user + ':' + config.database.password)
-        };
+    const remoteConfig = {
+      ajax: {
+        timeout: REQUEST_TIMEOUT
       }
+    };
 
-      remoteDB = new PouchDB(config.database.url, remoteConfig);
+    if (options.user && options.password) {
+      remoteCOnfig.ajax.headers = {
+        Authorization: 'Basic ' + window.btoa(options.user + ':' + options.password)
+      };
     }
+
+    remoteDB = new PouchDB(options.url, remoteConfig);
   },
 
-  load(fixtureCollectionName) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
-
-    const id = fixtureHelper._buildId(fixtureCollectionName);
-
+  load(id) {
     return fixtureHelper._loadFromDatabase(localDB, id);
   },
 
-  store(fixtures, fixtureCollectionName) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
-
-    const id = fixtureHelper._buildId(fixtureCollectionName);
-    let fixtureRecord = { _id: id, fixtures: fixtures };
-
-    return fixtureHelper._storeToDatabase(localDB, id, fixtureRecord);
+  store(fixtures, id) {
+    return fixtureHelper._storeToDatabase(localDB, id, {
+      _id: id,
+      fixtures
+    });
   },
 
-  push(fixtureCollectionName, tag) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
-
-    return fixtureHelper.load(fixtureCollectionName)
+  push(id, tag) {
+    return fixtureHelper.load(id)
       .then((fixtures) => {
-        const id = fixtureHelper._buildId(fixtureCollectionName);
-        const fixtureRecord = { _id: id, fixtures: fixtures };
+        const fixtureRecord = {
+          _id: id,
+          fixtures
+        };
 
         return fixtureHelper._storeToDatabase(remoteDB, id, fixtureRecord, tag)
           .then(() => fixtures)
@@ -75,30 +57,15 @@ let fixtureHelper = module.exports = {
       });
   },
 
-  pull(fixtureCollectionName, tags) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
-
-    return fixtureHelper.getLatestRevisionMapping(fixtureCollectionName, tags)
+  pull(id, tags) {
+    return fixtureHelper.getLatestRevisionMapping(id, tags)
       .then((latestRevisionMapping) => {
-        const id = fixtureHelper._buildId(fixtureCollectionName);
-
-        if (!latestRevisionMapping) {
-          return fixtureHelper._copyFromRemote(fixtureCollectionName, id);
-        }
-
-        return fixtureHelper._copyFromRemote(fixtureCollectionName, id, latestRevisionMapping.revision);
+        const latestRevision = _.result(latestRevisionMapping, 'revision');
+        return fixtureHelper._copyFromRemote(id, latestRevision)
       });
   },
 
-  clear(fixtureCollectionName) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
-
-    const id = fixtureHelper._buildId(fixtureCollectionName);
-
+  clear(id) {
     return localDB.get(id)
       .catch(fixtureHelper._swallow404)
       .then((existingFixtureRecord) => {
@@ -109,32 +76,19 @@ let fixtureHelper = module.exports = {
       });
   },
 
-  getLatestRevisionMapping(fixtureCollectionName, tags) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
+  getLatestRevisionMapping(id, tags) {
+    tags = _.compact([].concat(tags)); // Forces an array and removes empty values
 
-    if (!_.isArray(tags)) {
-      tags = _.compact([tags]);
-    }
-
-    return fixtureHelper._getRevisionMapping(fixtureCollectionName)
+    return fixtureHelper._getRevisionMapping(id)
       .then((fixtureRevisionMappings) => {
         return fixtureRevisionMappings.find((fixtureRevisionMapping) => _.includes(tags, fixtureRevisionMapping.tag));
       });
   },
 
-  _getRevisionMapping(fixtureCollectionName) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG);
-    }
-
+  _getRevisionMapping(id) {
     if (cachedRevisionMapping) {
       return Promise.resolve(cachedRevisionMapping);
     }
-
-    const id = fixtureHelper._buildId(fixtureCollectionName);
-
     return remoteDB.get(id, { revs_info: true })
       .catch(fixtureHelper._swallow404)
       .then((response) => {
@@ -204,20 +158,16 @@ let fixtureHelper = module.exports = {
       });
   },
 
-  _copyFromRemote(fixtureCollectionName, id, revision) {
+  _copyFromRemote(id, revision) {
     return fixtureHelper._loadFromDatabase(remoteDB, id, revision)
       .then((fixtures) => {
-        return fixtureHelper.store(fixtures, fixtureCollectionName)
+        return fixtureHelper.store(fixtures, id)
           .then(() => fixtures);
       });
   },
 
   _getNextRevisionNumber(revision) {
     return Number.parseInt(revision.match(/[^-]+/)[0], 10) + 1;
-  },
-
-  _buildId(fixtureCollectionName) {
-    return STORAGE_PREFIX + fixtureCollectionName;
   },
 
   // Swallow the error if the record doesn't exist yet...

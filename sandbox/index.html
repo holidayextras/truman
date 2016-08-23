@@ -35,9 +35,14 @@
   <script>
 		var callUrl;
 		truman.initialize({
-			database: {
-				url: 'http://127.0.0.1:5984/fixtures'
-			}
+			storage: {
+				couchDB: {
+					url: 'http://127.0.0.1:5984/fixtures',
+					user: '',
+					password: ''
+				}
+			},
+			fixtures: {}
 		}).then(function() {
 			callUrl = function(){
 	      $.ajax({
