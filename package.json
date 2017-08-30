@@ -1,13 +1,13 @@
 {
   "name": "truman",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Simple test fixtures for single page apps",
   "main": "src/truman.js",
-  "engine": "node >= 4.1.1",
+  "engine": "node >= 8.0.0",
   "scripts": {
     "release": "./scripts/release.sh",
     "build": "gulp build",
-    "lint": "make-up test src",
+    "lint": "standard --fix",
     "test": "npm-run-all test:mocha test:karma",
     "start": "gulp start",
     "test:mocha": "mocha test/unit --recursive",
@@ -61,13 +61,23 @@
     "karma-sourcemap-loader": "~0.3.7",
     "karma-spec-reporter": "0.0.24",
     "karma-webpack": "~1.7.0",
-    "make-up": "~7.1.0",
     "mocha": "~2.3.4",
     "npm-run-all": "~1.5.1",
     "run-sequence": "~1.1.5",
     "sinon-chai": "git+https://github.com/sjmulder/sinon-chai.git#pr/sinon-2.0.0-pre",
+    "standard": "^10.0.3",
     "webpack": "~1.12.11",
     "webpack-stream": "~3.1.0",
     "xmlhttprequest": "~1.8.0"
+  },
+  "standard": {
+    "globals": [
+      "afterEach",
+      "beforeEach",
+      "context",
+      "describe",
+      "expect",
+      "it"
+    ]
   }
 }

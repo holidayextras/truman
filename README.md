@@ -38,7 +38,7 @@ npm install truman --save
 ### Config options
 
 ```javascript
-let config = {
+const config = {
   // An array of query string parameters to omit from XHR comparison when matching fixtures.
   omittedQueryParams: ['sid', 'token'],
 

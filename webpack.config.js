@@ -1,9 +1,9 @@
-'use strict';
+'use strict'
 
-var webpack = require('webpack');
-var path = require('path');
+const webpack = require('webpack')
+const path = require('path')
 
-var uglify = new webpack.optimize.UglifyJsPlugin({
+const uglify = new webpack.optimize.UglifyJsPlugin({
   comments: false,
   sourceMap: false,
   mangle: false,
@@ -11,7 +11,7 @@ var uglify = new webpack.optimize.UglifyJsPlugin({
     warnings: false,
     drop_debugger: false
   }
-});
+})
 
 module.exports = {
   entry: './src/truman.js',
@@ -36,4 +36,4 @@ module.exports = {
   },
   plugins: [uglify],
   recordsPath: path.resolve('/tmp/truman.webpack.json')
-};
+}
