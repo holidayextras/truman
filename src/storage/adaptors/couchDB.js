@@ -2,8 +2,8 @@
 
 require('Base64')
 
-let _ = require('lodash')
-let PouchDB = require('pouchdb')
+const _ = require('lodash')
+const PouchDB = require('pouchdb')
 
 const STORAGE_PREFIX = 'fixture-'
 const NO_NAME_ERR_MSG = 'Fixture collection name not provided.'
@@ -13,14 +13,14 @@ let localDB = null
 let remoteDB = null
 let cachedRevisionMapping = null
 
-let fixtureHelper = module.exports = {
+const fixtureHelper = module.exports = {
   initialize (options) {
     _.assign(config, options)
     window.PouchDB = PouchDB // Necessary for the PouchDB Chrome inspector
     localDB = new PouchDB('truman')
 
     if (config.database) {
-      let remoteConfig = {
+      const remoteConfig = {
         ajax: {
           timeout: 120000
         }
@@ -52,7 +52,7 @@ let fixtureHelper = module.exports = {
     }
 
     const id = fixtureHelper._buildId(fixtureCollectionName)
-    let fixtureRecord = { _id: id, fixtures: fixtures }
+    const fixtureRecord = { _id: id, fixtures: fixtures }
 
     return fixtureHelper._storeToDatabase(localDB, id, fixtureRecord)
   },
@@ -147,7 +147,7 @@ let fixtureHelper = module.exports = {
           .filter((revInfo) => revInfo.status === 'available')
           .map((revInfo) => revInfo.rev)
 
-        let result = []
+        const result = []
 
         _.each(availableRevisions, (revision) => {
           let matchingTag = null
@@ -190,7 +190,7 @@ let fixtureHelper = module.exports = {
   },
 
   _loadFromDatabase (database, id, revision) {
-    let options = {}
+    const options = {}
 
     if (revision) {
       options.rev = revision

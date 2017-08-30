@@ -129,7 +129,7 @@ const truman = module.exports = {
     return storage.load(fixtureCollectionName)
       .then((fixtures) => {
         // Load all of our fixtures into a fake server.
-        let fakeServer = sinon.fakeServer.create()
+        const fakeServer = sinon.fakeServer.create()
         fakeServer.autoRespond = true
         fakeServer.autoRespondAfter = 0
         fakeServer.respondWith(/.*/, (xhr) => {

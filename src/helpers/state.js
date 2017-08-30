@@ -1,15 +1,15 @@
 'use strict'
 
-let _ = require('lodash')
+const _ = require('lodash')
 
-let stateHelper = module.exports = {
+const stateHelper = module.exports = {
 
   updateState (newState) {
     if (!newState) {
       return window.localStorage.removeItem('autoFixture')
     }
 
-    let state = stateHelper.loadState()
+    const state = stateHelper.loadState()
     window.localStorage.setItem('autoFixture', JSON.stringify(_.assign(state, newState)))
   },
 

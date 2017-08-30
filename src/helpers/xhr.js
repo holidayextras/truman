@@ -1,16 +1,16 @@
 'use strict'
 
-let _ = require('lodash')
-let RealXMLHttpRequest = window.XMLHttpRequest
+const _ = require('lodash')
+const RealXMLHttpRequest = window.XMLHttpRequest
 
 module.exports = {
 
   getResponseHeadersObject (xhr) {
-    let result = {}
+    const result = {}
     const headers = xhr.getAllResponseHeaders().split('\n')
 
     headers.forEach((header) => {
-      let headerSegments = header.split(':')
+      const headerSegments = header.split(':')
       const key = headerSegments.shift()
       if (key) {
         result[key] = _.trim(headerSegments.join(':'))
@@ -48,7 +48,7 @@ module.exports = {
     // 1. Push the fake XHR as a 'password' arg on to calls to 'open'.
     const oldOpen = window.XMLHttpRequest.prototype.open
     window.XMLHttpRequest.prototype.open = function () {
-      let args = Array.prototype.slice.call(arguments)
+      const args = Array.prototype.slice.call(arguments)
 
       // Adding as an extra arg breaks jqXHR, so hijack password argument: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#open()
       while (args.length < 5) {
@@ -62,7 +62,7 @@ module.exports = {
     // 2. Intercept the fake XHR argument and add it as a property of the real XHR.
     const oldRealOpen = RealXMLHttpRequest.prototype.open
     RealXMLHttpRequest.prototype.open = function () {
-      let args = Array.prototype.slice.call(arguments)
+      const args = Array.prototype.slice.call(arguments)
 
       if (args[args.length - 1] instanceof window.XMLHttpRequest) {
         this.originalFakeXHR = args.pop()

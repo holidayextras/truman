@@ -5,7 +5,7 @@ const omitDeep = require('omit-deep')
 const xhrHelper = require('./xhr')
 const levenshtein = require('fast-levenshtein')
 
-let fixtureHelper = module.exports = {
+const fixtureHelper = module.exports = {
   _config: {
     omittedQueryParams: [],
     omittedDataParams: [],
