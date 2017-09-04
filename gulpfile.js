@@ -61,12 +61,17 @@ gulp.task('connect', function () {
     { from: '^([^.]+[^/])$', to: '$1.html' }
   ])
 
+  const cors = function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    next()
+  }
+
   return connect.server({
     root: 'sandbox',
     port: 8082,
     livereload: true,
     middleware: function () {
-      return [middleware]
+      return [cors, middleware]
     }
   })
 })
