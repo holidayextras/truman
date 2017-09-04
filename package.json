@@ -1,6 +1,6 @@
 {
   "name": "truman",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Simple test fixtures for single page apps",
   "main": "src/truman.js",
   "engine": "node >= 8.0.0",
