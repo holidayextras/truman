@@ -45,6 +45,10 @@ const config = {
   // An array request body JSON parameters to omit from XHR comparison when matching fixtures.
   omittedDataParams: ['requestid'],
 
+  // An array of remote domains (with scheme) for which you don't want to store or replay fixtures
+  // This is typically useful for tracking calls that do not affect functionality of your app.
+  omittedDomains: ['https://my.trackingprovider.com'],
+
   // Domain synonyms let us treat requests to one domain as matches for requests to another. For example, you
   // may record your fixtures against a local copy of an API but want to make sure those fixtures are replayed
   // when requests to the staging copy of the API are made during your test run. Domain synonyms do just that.
@@ -63,7 +67,7 @@ const config = {
 
     // Password for the remove CouchDB database.
     password: 'mycouchpassword'
-  }    
+  }
 }
 ```
 

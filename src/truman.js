@@ -10,6 +10,9 @@ const storage = require('./storage')
 const Promise = require('lie')
 const _ = require('lodash')
 
+let opts = {
+  omittedDomains: []
+}
 let storageFixtures = []
 
 const RECORDING_STATE = 'recording'
@@ -22,6 +25,7 @@ const truman = module.exports = {
 
   initialize (options, callback) {
     const message = 'Truman is up and running!'
+    opts = _.assign(opts, options)
 
     if (truman._initialized) {
       if (callback) {
@@ -169,6 +173,11 @@ const truman = module.exports = {
               loggingHelper.log(fixtures)
             }
             return !foundFixtures // true = allow, false = stub
+          },
+          (method, url) => {
+            // For omitted domains we don't even want to log a CALLTHROUGH
+            const domain = fixtureHelper.domainFromUrl(url)
+            return _.includes(opts.omittedDomains, domain)
           }
         ]
 
