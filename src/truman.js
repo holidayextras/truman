@@ -236,6 +236,11 @@ const truman = module.exports = {
   },
 
   _storeXHR (xhr, fixtureCollectionName) {
+    if (_.includes(opts.omittedDomains, fixtureHelper.domainFromUrl(xhr.url))) {
+      // Don't store fixtures for domains we don't care about
+      return
+    }
+
     loggingHelper.log(`%cRECORDING%c: ${xhr.url}`, 'color: red', 'color: black')
     fixtureHelper.addXhr(storageFixtures, xhr)
     xhr.fixtured = true

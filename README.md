@@ -47,7 +47,9 @@ const config = {
 
   // An array of remote domains (with scheme) for which you don't want to store or replay fixtures
   // This is typically useful for tracking calls that do not affect functionality of your app.
-  omittedDomains: ['https://my.trackingprovider.com'],
+  omittedDomains: [
+    'https://my.trackingprovider.com'
+  ],
 
   // Domain synonyms let us treat requests to one domain as matches for requests to another. For example, you
   // may record your fixtures against a local copy of an API but want to make sure those fixtures are replayed
