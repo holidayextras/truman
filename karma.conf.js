@@ -7,8 +7,8 @@ const customLaunchers = {
   // Commented the below out for the time being as it's timing out a lot and failing builds randomly:
   // win7ie9: { base: 'SauceLabs', browserName: 'internet explorer', platform: 'Windows 7', version: '9.0' },
   androidChrome: { base: 'SauceLabs', browserName: 'android', platform: 'Linux' },
-  iosSafari: { base: 'SauceLabs', browserName: 'iphone', platform: 'OS X 10.10' },
-  iosSafari92: { base: 'SauceLabs', browserName: 'iphone', platform: 'OS X 10.10', version: '9.2' }
+  iosSafari: { base: 'SauceLabs', browserName: 'iphone', platform: 'OS X 10.12' },
+  iosSafari92: { base: 'SauceLabs', browserName: 'iphone', platform: 'OS X 10.12', version: '9.2' }
 }
 
 module.exports = function (config) {
