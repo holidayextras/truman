@@ -30,11 +30,11 @@
   "license": "MIT",
   "dependencies": {
     "Base64": "^1.0.1",
-    "lie": "^3.1.1",
+    "lie": "^3.2.0",
     "lodash": "^4.17.4",
     "omit-deep": "splodingsocks/omit-deep",
     "pouchdb": "^6.3.4",
-    "sinon": "^3.3.0"
+    "sinon": "^4.2.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -53,7 +53,7 @@
     "gulp-watch": "^5.0.0",
     "http-rewrite-middleware": "~0.1.6",
     "imports-loader": "~0.6.5",
-    "jsdom": "^11.2.0",
+    "jsdom": "^11.6.2",
     "karma": "~0.13.19",
     "karma-chrome-launcher": "~0.2.2",
     "karma-mocha": "~0.2.1",
@@ -63,8 +63,8 @@
     "karma-webpack": "~1.7.0",
     "mocha": "^5.0.0",
     "npm-run-all": "^4.1.2",
-    "run-sequence": "^2.1.0",
-    "sinon-chai": "^2.13.0",
+    "run-sequence": "^2.2.1",
+    "sinon-chai": "^2.14.0",
     "standard": "^10.0.3",
     "webpack": "~1.12.11",
     "webpack-stream": "~3.1.0",
