@@ -54,24 +54,12 @@ const truman = module.exports = {
     return storage.pull(fixtureName, fixture).then(() => callback())
   },
 
-  push (fixtureCollectionName, tag, callback) {
+  push (fixtureCollectionName, callback) {
     if (truman.currentStatus()) {
       throw new Error('Cannot push when in either a recording or replaying state, call `truman.restore()` first.')
     }
-
-    return truman._storageFifo.then(() => {
-      return storage.push(fixtureCollectionName, tag)
-        .then((fixtures) => {
-          const message = `Stored ${fixtures.length} fixtures to database (tag: ${(tag || '[AUTO]')})`
-          if (callback) {
-            callback(message)
-          }
-          loggingHelper.log(`%c${message}`, 'color: green')
-        })
-        .catch((error) => {
-          loggingHelper.error('%cERROR', 'color: red', error)
-        })
-    })
+    return storage.load(fixtureCollectionName)
+      .then((result) => callback(result))
   },
 
   record (fixtureCollectionName, callback) {
