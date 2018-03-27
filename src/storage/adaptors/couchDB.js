@@ -16,7 +16,6 @@ let cachedRevisionMapping = null
 const fixtureHelper = module.exports = {
   initialize (options) {
 
-    // options.fixture - to feed
     _.assign(config, options)
     window.PouchDB = PouchDB // Necessary for the PouchDB Chrome inspector
     localDB = new PouchDB('truman')
@@ -174,8 +173,6 @@ const fixtureHelper = module.exports = {
         if (tag) {
           existingFixtureRecord.localRevisionMap[tag] = fixtureHelper._getNextRevisionNumber(existingFixtureRecord._rev)
         }
-
-        console.log('existingFixtureRecord',existingFixtureRecord)
 
         return database.put(existingFixtureRecord)
       })
