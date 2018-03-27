@@ -47,46 +47,19 @@ const truman = module.exports = {
     })
   },
 
-  pull (fixtureCollectionName, tags, callback) {
+  pull (fixtureName, fixture, callback) {
     if (truman.currentStatus()) {
       throw new Error('Cannot pull when in either a recording or replaying state, call `truman.restore()` first.')
     }
-
-    return storage.getLatestRevisionMapping(fixtureCollectionName, tags)
-      .then((latestRevisionMapping) => {
-        const latestTag = _.get(latestRevisionMapping, 'tag')
-        return storage.pull(fixtureCollectionName, latestTag)
-          .then((fixtures) => {
-            const message = `Loaded ${fixtures.length} fixtures from the database (tag: ${(latestTag || '[LATEST]')})`
-            if (callback) {
-              callback(message)
-            }
-            loggingHelper.log(`%c${message}`, 'color: green')
-          })
-          .catch((error) => {
-            loggingHelper.error('%cERROR', 'color: red', error)
-          })
-      })
+    return storage.pull(fixtureName, fixture).then(() => callback())
   },
 
-  push (fixtureCollectionName, tag, callback) {
+  push (fixtureCollectionName, callback) {
     if (truman.currentStatus()) {
       throw new Error('Cannot push when in either a recording or replaying state, call `truman.restore()` first.')
     }
-
-    return truman._storageFifo.then(() => {
-      return storage.push(fixtureCollectionName, tag)
-        .then((fixtures) => {
-          const message = `Stored ${fixtures.length} fixtures to database (tag: ${(tag || '[AUTO]')})`
-          if (callback) {
-            callback(message)
-          }
-          loggingHelper.log(`%c${message}`, 'color: green')
-        })
-        .catch((error) => {
-          loggingHelper.error('%cERROR', 'color: red', error)
-        })
-    })
+    return storage.load(fixtureCollectionName)
+      .then((result) => callback(result))
   },
 
   record (fixtureCollectionName, callback) {

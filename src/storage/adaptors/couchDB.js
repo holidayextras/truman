@@ -15,6 +15,7 @@ let cachedRevisionMapping = null
 
 const fixtureHelper = module.exports = {
   initialize (options) {
+
     _.assign(config, options)
     window.PouchDB = PouchDB // Necessary for the PouchDB Chrome inspector
     localDB = new PouchDB('truman')
@@ -75,21 +76,9 @@ const fixtureHelper = module.exports = {
       })
   },
 
-  pull (fixtureCollectionName, tags) {
-    if (!fixtureCollectionName) {
-      throw new Error(NO_NAME_ERR_MSG)
-    }
-
-    return fixtureHelper.getLatestRevisionMapping(fixtureCollectionName, tags)
-      .then((latestRevisionMapping) => {
-        const id = fixtureHelper._buildId(fixtureCollectionName)
-
-        if (!latestRevisionMapping) {
-          return fixtureHelper._copyFromRemote(fixtureCollectionName, id)
-        }
-
-        return fixtureHelper._copyFromRemote(fixtureCollectionName, id, latestRevisionMapping.revision)
-      })
+  pull (fixtureCollectionName, fixtures) {
+    return fixtureHelper.store(fixtures, fixtureCollectionName)
+      .then(() => fixtures)
   },
 
   clear (fixtureCollectionName) {
