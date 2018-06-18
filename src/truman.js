@@ -8,7 +8,6 @@ const loggingHelper = require('./helpers/logging.js')
 const storage = require('./storage')
 
 const Promise = require('lie')
-const _ = require('lodash')
 
 let opts = {
   omittedDomains: []
@@ -25,7 +24,7 @@ const truman = module.exports = {
 
   initialize (options, callback) {
     const message = 'Truman is up and running!'
-    opts = _.assign(opts, options)
+    opts = Object.assign(opts, options)
 
     if (truman._initialized) {
       if (callback) {
@@ -150,7 +149,7 @@ const truman = module.exports = {
           (method, url) => {
             // For omitted domains we don't even want to log a CALLTHROUGH
             const domain = fixtureHelper.domainFromUrl(url)
-            return _.includes(opts.omittedDomains, domain)
+            return opts.omittedDomains.includes(domain)
           }
         ]
 
@@ -209,7 +208,7 @@ const truman = module.exports = {
   },
 
   _storeXHR (xhr, fixtureCollectionName) {
-    if (_.includes(opts.omittedDomains, fixtureHelper.domainFromUrl(xhr.url))) {
+    if (opts.omittedDomains.includes(xhr.url)) {
       // Don't store fixtures for domains we don't care about
       return
     }

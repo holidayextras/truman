@@ -1,7 +1,15 @@
 'use strict'
 
-const _ = require('lodash')
+const trim = require('lodash/trim')
+const omit = require('lodash/omit')
+const isEqual = require('lodash/isEqual')
 const RealXMLHttpRequest = window.XMLHttpRequest
+
+const _ = {
+  trim,
+  omit,
+  isEqual
+}
 
 module.exports = {
 

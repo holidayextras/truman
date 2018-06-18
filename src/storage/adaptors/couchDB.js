@@ -2,7 +2,11 @@
 
 require('Base64')
 
-const _ = require('lodash')
+const includes = require('lodash/includes')
+const isArray = require('lodash/isArray')
+const compact = require('lodash/compact')
+const each = require('lodash/each')
+
 const PouchDB = require('pouchdb')
 
 const STORAGE_PREFIX = 'fixture-'
@@ -13,10 +17,17 @@ let localDB = null
 let remoteDB = null
 let cachedRevisionMapping = null
 
+const _ = {
+  includes,
+  isArray,
+  compact,
+  each
+}
+
 const fixtureHelper = module.exports = {
   initialize (options) {
 
-    _.assign(config, options)
+    Object.assign(config, options)
     window.PouchDB = PouchDB // Necessary for the PouchDB Chrome inspector
     localDB = new PouchDB('truman')
 
