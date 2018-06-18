@@ -3,7 +3,6 @@
 const sinon = require('../../dependencies.js').sinon
 const expect = require('../../dependencies.js').expect
 
-const _ = require('lodash')
 const fixtureHelper = require('../../../src/helpers/fixtures.js')
 const xhrHelper = require('../../../src/helpers/xhr.js')
 
@@ -20,13 +19,9 @@ describe('FixtureHelper', () => {
   afterEach(() => sandbox.restore())
 
   describe('initialize(options)', () => {
-    beforeEach(() => {
-      sandbox.stub(_, 'assign')
-    })
-
     it('assigns the config to the module', () => {
       fixtureHelper.initialize({ foo: 'bar' })
-      expect(_.assign).to.have.been.calledWith(fixtureHelper._config, { foo: 'bar' })
+      expect(fixtureHelper._config).to.deep.include({ foo: 'bar' })
     })
   })
 

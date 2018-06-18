@@ -13,7 +13,7 @@ const fixtureHelper = module.exports = {
   },
 
   initialize (options) {
-    _.assign(fixtureHelper._config, options)
+    Object.assign(fixtureHelper._config, options)
   },
 
   addXhr (fixtures, xhr) {

@@ -1,7 +1,5 @@
 'use strict'
 
-const _ = require('lodash')
-
 const stateHelper = module.exports = {
 
   updateState (newState) {
@@ -10,7 +8,7 @@ const stateHelper = module.exports = {
     }
 
     const state = stateHelper.loadState()
-    window.localStorage.setItem('autoFixture', JSON.stringify(_.assign(state, newState)))
+    window.localStorage.setItem('autoFixture', JSON.stringify(Object.assign(state, newState)))
   },
 
   loadState () {

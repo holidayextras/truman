@@ -16,7 +16,7 @@ let cachedRevisionMapping = null
 const fixtureHelper = module.exports = {
   initialize (options) {
 
-    _.assign(config, options)
+    Object.assign(config, options)
     window.PouchDB = PouchDB // Necessary for the PouchDB Chrome inspector
     localDB = new PouchDB('truman')
 
