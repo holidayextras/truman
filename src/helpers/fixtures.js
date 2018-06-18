@@ -1,9 +1,19 @@
 'use strict'
 
-const _ = require('lodash')
+const findIndex = require('lodash/findIndex')
+const isEqual = require('lodash/isEqual')
+const filter = require('lodash/filter')
+const includes = require('lodash/includes')
 const omitDeep = require('omit-deep')
 const xhrHelper = require('./xhr')
 const levenshtein = require('fast-levenshtein')
+
+const _ = {
+  findIndex,
+  isEqual,
+  filter,
+  includes
+}
 
 const fixtureHelper = module.exports = {
   _config: {
