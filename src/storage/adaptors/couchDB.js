@@ -29,7 +29,10 @@ const fixtureHelper = module.exports = {
 
     Object.assign(config, options)
     window.PouchDB = PouchDB // Necessary for the PouchDB Chrome inspector
-    localDB = new PouchDB('truman')
+    const localConfig = config.database ? {} : { revs_limit: 1, auto_compaction: true } // Force compaction when not syncing with a remote database
+    localDB = new PouchDB('truman', localConfig)
+
+    console.log({localDB})
 
     if (config.database) {
       const remoteConfig = {
@@ -55,6 +58,7 @@ const fixtureHelper = module.exports = {
 
     const id = fixtureHelper._buildId(fixtureCollectionName)
 
+      console.log({ localDB })
     return fixtureHelper._loadFromDatabase(localDB, id)
   },
 
