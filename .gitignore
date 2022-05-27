@@ -3,3 +3,5 @@ dist
 node_modules
 npm-debug.log
 sandbox/truman.min.js
+sandbox/truman.js
+sandbox/truman.js.LICENSE.txt

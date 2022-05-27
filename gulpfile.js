@@ -6,11 +6,11 @@ const webpack = require('webpack-stream')
 const webpackConfig = require('./webpack.config.js')
 const del = require('del')
 const notify = require('gulp-notify')
-const runSequence = require('run-sequence')
 const connect = require('gulp-connect')
 const connectRewrite = require('http-rewrite-middleware')
 const open = require('gulp-open')
 const rename = require('gulp-rename')
+const util = require('util')
 
 const SOURCE_CODE = './src/**/*.js'
 const ENTRY_POINT = './src/truman.js'
@@ -28,35 +28,36 @@ function logError (error) {
   this.emit('end')
 }
 
+const tasks = module.exports
+
 // ---------------------------------
 // --------- BUILD TASKS -----------
 // ---------------------------------
-gulp.task('clean', function (callback) {
-  return del(BUILT_FILES, callback)
-})
+tasks.clean = function clean () {
+  return del(BUILT_FILES)
+}
 
-gulp.task('bundle', function () {
+tasks.bundle = function bundle () {
   return gulp.src(ENTRY_POINT)
     .pipe(webpack(webpackConfig))
     .on('error', logError)
-    .pipe(rename('truman.min.js'))
     .pipe(gulp.dest(BUILD_DEST))
     .pipe(gulp.dest(SANDBOX_DEST))
-})
+}
 
 // ---------------------------------
 // --------- WATCH TASKS -----------
 // ---------------------------------
-gulp.task('watch', function () {
+tasks.watch = function watch () {
   watch(SOURCE_CODE, function () {
     gulp.start('build')
   })
-})
+}
 
 // ---------------------------------
 // --------- SERVER TASKS ----------
 // ---------------------------------
-gulp.task('connect', function () {
+tasks.connect = function connectTask () {
   const middleware = connectRewrite.getMiddleware([
     { from: '^([^.]+[^/])$', to: '$1.html' }
   ])
@@ -74,20 +75,21 @@ gulp.task('connect', function () {
       return [cors, middleware]
     }
   })
-})
+}
 
-gulp.task('open', function () {
+tasks.open = function open () {
   return gulp.src('./sandbox/index.html')
     .pipe(open({
       uri: 'http://localhost:8082',
       app: 'google chrome'
     }))
-})
+}
 
-gulp.task('build', function (cb) {
-  return runSequence('clean', 'bundle', cb)
-})
+tasks.build = gulp.series(tasks.clean, tasks.bundle)
 
-gulp.task('start', function (cb) {
-  return runSequence(['clean', 'connect'], 'bundle', ['watch', 'open'], cb)
-})
+tasks.start = gulp.series(
+  gulp.parallel(tasks.clean, tasks.connect),
+  tasks.bundle,
+  gulp.parallel(tasks.watch, tasks.open),
+)
+
