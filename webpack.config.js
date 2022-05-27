@@ -3,16 +3,6 @@
 const webpack = require('webpack')
 const path = require('path')
 
-const uglify = new webpack.optimize.UglifyJsPlugin({
-  comments: false,
-  sourceMap: false,
-  mangle: false,
-  compress: {
-    warnings: false,
-    drop_debugger: false
-  }
-})
-
 module.exports = {
   entry: './src/truman.js',
   output: {
@@ -22,18 +12,19 @@ module.exports = {
     library: 'truman'
   },
   module: {
-    loaders: [
-      {
-        test: /\.js?$/,
-        exclude: /(node_modules)/,
-        loader: 'babel', // 'babel-loader' is also a legal name to reference
-        query: {
-          presets: ['es2015'],
-          cacheDirectory: true
+    rules: [{
+      test: /\.js?$/,
+      exclude: /(node_modules)/,
+      use: [{
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/env']
         }
-      }
-    ]
+      }]
+    }]
   },
-  plugins: [uglify],
+  // optimization: {
+  //   minimize: true
+  // },
   recordsPath: path.resolve('/tmp/truman.webpack.json')
 }
